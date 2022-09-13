@@ -1,0 +1,5 @@
+variable = "Hello World"
+variable = 23.095
+variable = 23
+variable = True
+variable = 707890219387482907809246270893472089832048038923090248790293
