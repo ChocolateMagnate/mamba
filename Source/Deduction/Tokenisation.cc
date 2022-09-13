@@ -17,7 +17,7 @@ namespace Interpreter {
      * steam of lexemes, it can be grammatically 
      * matched into a syntax tree and be executed.*/
     enum Token {
-        Keyword, Operator, Separator, Number, String, Unknown,
+        Keyword, Operator, Separator, Number, String, Boolean, Unknown,
         Class, Function, Variable, Constant, Module, Indentation
     };
     /// @brief The composite type of an individual lexeme
@@ -27,11 +27,14 @@ namespace Interpreter {
         std::string label;
         std::map<std::string, std::string> attributes;
     } Lexeme;
+    //The string-to-lexeme identifier table to keep track of all user definitions.
+    std::map<std::string, Lexeme> identifiers;
 
     /// @brief Cleanses tag comments from the line.
     std::string clearComments(std::string line){
         int tag = line.find("#");
         if (tag != std::string::npos) return line.substr(0, tag);
+        return line;
     }
 
     /// @brief Splits the line into a linked list of individual
@@ -64,28 +67,67 @@ namespace Interpreter {
                 index = line.find(separator);
             }
         }
-        for (std::string operator : operators){
-            int index = line.find(operator);
+        // operator is a C++ keyword, therefore we should 
+        // prefix it with an underscore to avoid ambiguity. 
+        for (auto _operator : operators){
+            int index = line.find(_operator);
             while (index != std::string::npos){
                 components.push_back(line.substr(0, index));
-                components.push_back(operator);
+                components.push_back(_operator);
                 line = line.erase(index);
-                index = line.find(operator);
+                index = line.find(_operator);
             }
         }
         return components;
     }
 
-    list<Lexeme> parseComponents(list<string> components){
-        list<Lexeme> lexemes;
+    /// @brief Parses the extracted textual units into individual highly descriptive lexemes.
+    /// @param components The list of string representations of lexemes in the code.
+    /// @param flags An array of tokens to use to identify new identifier declarations.
+    /// @return The array of matched lexemes.
+    std::list<Lexeme> parseComponents(std::list<std::string> components, Token* flags){
+        int count; //The index of the flag to refer to.
+        bool found; //The variable to identify if a lexeme was matched in the first phase.
+        std::list<Lexeme> lexemes;
+        // Searching through constant lexemes.
         for (std::string component : components){
             for (std::string keyword : keywords){
                 if (component == keyword){
                     lexemes.push_back({Keyword, component});
-                    break;
+                    found = true; break;
+                }
+            }
+            if (found) continue; //We verify if component was matched to not keep
+                             //going through the rest of lexemes when it was found.
+            for (std::string _operator : operators){
+                if (component == _operator){
+                    lexemes.push_back({Operator, component});
+                    found = true; break;
+                }
+            }
+            if (found) continue;
+            for (std::string separator : separators){
+                if (component == separator){
+                    lexemes.push_back({Separator, component});
+                    found = true; break;
+                }
+            }
+            if (!found){ //If component was not found, it means it's an identifier.
+                //If the identifier was found in the table:
+                if (identifiers.find(component) != identifiers.end()){
+                    lexemes.push_back({flags[count], component});
+                    count++;
+                }
+                    
+                else {
+                    //TO-DO: implement valid-invalid identifier verification.
+                    lexemes.push_back({flags[count], component});
+                    count++;
                 }
             }
         }
+        
+        return lexemes;
     }
 
 };
