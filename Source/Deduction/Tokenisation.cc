@@ -70,11 +70,11 @@ namespace Interpreter {
 
     /// @brief Parses the extracted textual units into individual highly descriptive lexemes.
     /// @param components The list of string representations of lexemes in the code.
-    /// @param flags An array of tokens to use to identify new identifier declarations.
     /// @return The array of matched lexemes.
     std::list<Lexeme> parseComponents(std::list<std::string> components){
+        //TO-DO: add details to the lexemes;
         int count;           //The index of the unknown lexeme to refer to.
-        bool found = false; //The variable to identify if a lexeme was matched in the first phase.
+        bool found = false; //The variable to identify if a lexeme was matched to escape the loop.
         bool searchEquationMark = false; //The flag if we should look for an equation mark to validate an unknown lexeme.
         std::string previous; //Keeping track of the previous token for class and function declarations.
         std::vector<Lexeme*> unknowns; //The record of unknown identifiers.
@@ -82,11 +82,12 @@ namespace Interpreter {
         for (std::string component : components){
             //Firstly we need to verify if there's an equation mark 
             //after an unknown id to assign it as a local object.
+            if (component == " " || component == ";") //If the statement is terminated, 
+                searchEquationMark = false;          //an unknown lexeme cannot be assigned.
             if (searchEquationMark){
                 if (component == "=") 
                     (unknowns[count - 1])->type = Object;
             }
-
             //Then we search through the constant language-defined lexemes.
             for (std::string _operator : operators){
                  //operator is a C++ keyword, therefore we need
@@ -116,8 +117,8 @@ namespace Interpreter {
             //If component was not found, it means it's an identifier.
             if (!found){ 
                 //If the identifier was found in the table:
-                auto lookup = identifiers.find(component);
-                if (lookup != identifiers.end()){
+                auto lookup = identifiers->find(component);
+                if (lookup != identifiers->end()){
                     //Thanks for www.geeksforgeeks.com/iterators-c-stl for the tutorial.
                     lexemes.push_back({lookup->second.type, component});
                     count++;
@@ -138,6 +139,7 @@ namespace Interpreter {
                     }
                 }
             }
+            previous = component;
         }
         return lexemes;
     }

@@ -5,7 +5,8 @@
  * Bytecode (.pyc) file for later faster execution. */
 #include <iostream>
 #include <string>
-#include "Commons.cc"
+#include <list>
+#include "./Source/Commons.cc"
 namespace Interpreter {
     /* Grammar parsing is the second stage of
      * interpretation that builds the syntax 
@@ -28,9 +29,18 @@ namespace Interpreter {
         BooleanAnd, BooleanOr, BooleanNot, Repeat, Break, Continue, DeclareClass, DeclareObject,
         DeclareFunction, CallFunction, ThrowException, CatchException
     };
+    /// @brief The primary class used to represent the code as a graph
+    /// where nodes are lexemes and edges are their grammar relations.
+    class Bytecode{};
     
-    typedef struct GrammarLexeme{
-        Lexeme lexeme;
+    /// @brief Parses the line into hierarchical bytecode ready to be parsed into IR.
+    /// @param lexemes The linked list of lexemes to grammatically match.
+    /// @return Syntax tree graph.
+    Bytecode parseGrammar(std::list<Lexeme> lexemes){}
 
-    } GrammarLexeme;
+    /// @brief Generates the IR as an array of integers mapped to the
+    /// interpreter's internal functions that execute said code. 
+    /// @param graph The parsed line object that represents the grammar as a graph.
+    /// @return The array of unsigned integers to switch.
+    int* generateIR(Bytecode graph){}
 };
