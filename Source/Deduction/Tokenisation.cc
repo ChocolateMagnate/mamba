@@ -72,31 +72,42 @@ namespace Interpreter {
     /// @param components The list of string representations of lexemes in the code.
     /// @param flags An array of tokens to use to identify new identifier declarations.
     /// @return The array of matched lexemes.
-    std::list<Lexeme> parseComponents(std::list<std::string> components, Token* flags){
-        int count;           //The index of the flag to refer to.
+    std::list<Lexeme> parseComponents(std::list<std::string> components){
+        int count;           //The index of the unknown lexeme to refer to.
         bool found = false; //The variable to identify if a lexeme was matched in the first phase.
+        bool searchEquationMark = false; //The flag if we should look for an equation mark to validate an unknown lexeme.
+        std::string previous; //Keeping track of the previous token for class and function declarations.
+        std::vector<Lexeme*> unknowns; //The record of unknown identifiers.
         std::list<Lexeme> lexemes;
         for (std::string component : components){
-            //Firstly we search through the constant language-defined lexemes.
+            //Firstly we need to verify if there's an equation mark 
+            //after an unknown id to assign it as a local object.
+            if (searchEquationMark){
+                if (component == "=") 
+                    (unknowns[count - 1])->type = Object;
+            }
+
+            //Then we search through the constant language-defined lexemes.
+            for (std::string _operator : operators){
+                 //operator is a C++ keyword, therefore we need
+                //to prefix it with an underscore to avoid ambiguity.
+                if (component == _operator){
+                    lexemes.push_back({Operator, component});
+                    found = true; break;
+                }
+            }
+            if (found) continue; //We verify if component was matched to not keep
+                                //going through the rest of lexemes when it was found.
             for (std::string keyword : keywords){
                 if (component == keyword){
                     lexemes.push_back({Keyword, component});
                     found = true; break;
                 }
             }
-            if (found) continue; //We verify if component was matched to not keep
-                                //going through the rest of lexemes when it was found.
-            for (std::string _operator : operators){
-                if (component == _operator){
-                    lexemes.push_back({Operator, component});
-                    found = true; break;
-                }
-            }
             if (found) continue;
             for (std::string separator : separators){
-                //Separators are the rarest symbols in the code,
-                //hence they should stay at the end to find other
-                //more frequent lexemes faster.
+                //Separators are the rarest symbols in the code, hence they should 
+                //stay at the end to find other more frequent lexemes faster.
                 if (component == separator){
                     lexemes.push_back({Separator, component});
                     found = true; break;
@@ -105,13 +116,26 @@ namespace Interpreter {
             //If component was not found, it means it's an identifier.
             if (!found){ 
                 //If the identifier was found in the table:
-                if (identifiers.find(component) != identifiers.end()){
-                    lexemes.push_back({*(flags + count), component});
+                auto lookup = identifiers.find(component);
+                if (lookup != identifiers.end()){
+                    //Thanks for www.geeksforgeeks.com/iterators-c-stl for the tutorial.
+                    lexemes.push_back({lookup->second.type, component});
                     count++;
                 } else {
-                    //TO-DO: implement valid-invalid identifier verification.
-                    lexemes.push_back({*(flags + count), component});
-                    count++;
+                    /* If id is unknown, we can verify if it is a name of a class or a 
+                     * function by looking at the previous keyword, it should be class
+                     * or def. If it is a variable, it should have an equation mark after
+                     * it. We will verify if the name declares a class or a function with
+                     * previous variable and add it as an unknown token if it wasn't valid,
+                     * and then if we detect an applicable equation mark, we will edit it.*/
+                    if (previous == "class") lexemes.push_back({Class, component});
+                    else if (previous == "def") lexemes.push_back({Function, component});
+                    else {
+                        lexemes.push_back({Unknown, component});
+                        unknowns.push_back(&(*lexemes.end()));
+                        searchEquationMark = true;
+                        count++;
+                    }
                 }
             }
         }

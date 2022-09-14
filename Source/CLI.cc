@@ -31,9 +31,9 @@ namespace Interpreter {
     }
     /// @brief Prints the detailed instruction how to use a single command.
     /// @param option The option in the command line to explain. 
-    auto helpDescribe(std::string option){
-        switch(str2int(option.c_str())){
-            case str2int("show-lexemes"):
+    void helpDescribe(std::string option){
+        switch(str2int(option.c_str())){  //We use str2int function to convert const char* to integral
+            case str2int("show-lexemes")://pre-calculated value because strings cannot be switched.
                 std::cout << "For the debugging purposes, this function is used to print " <<
                     "all the lexemes recognised in the code and make sure they were labelled " << 
                     "correctly." << std::endl;
@@ -65,4 +65,8 @@ namespace Interpreter {
         //for (auto lexeme : identifiers) //<< operator is not overloaded
         //    std::cout << lexeme.first << ", " << lexeme.second << std::endl;
     }
+    /// @brief Prints the list of all dependencies and their items used in the app.
+    void listDependencies(){}
+    /// @brief Prints the array of integers used as the IR to quickly execute the app.
+    void showBytecode(){}
 };
