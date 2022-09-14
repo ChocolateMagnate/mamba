@@ -27,8 +27,6 @@ namespace Interpreter {
         std::string label;
         std::map<std::string, std::string> attributes;
     } Lexeme;
-    //The string-to-lexeme identifier table to keep track of all user definitions.
-    std::map<std::string, Lexeme> identifiers;
 
     /// @brief Cleanses tag comments from the line.
     std::string clearComments(std::string line){
@@ -40,21 +38,21 @@ namespace Interpreter {
     /// @brief Splits the line into a linked list of individual
     /// meaningful parts that are ready to be parsed as lexemes.
     std::list<std::string> splitIntoComponents(std::string line){
-        std::list<std::string> components;
-        //Step 1. Extract the strings.
+        std::list<std::string> components; //TO-DO: implement multiline string 
+        //Step 1. Extract the strings.    //with triple quotations detection.
         int quote = line.find("\"");
         while (quote != std::string::npos){
-            int end = line.find("\"", quote+1);
+            int end = line.find("\"", quote + 1);
             if (end == std::string::npos) break;
-            components.push_back(line.substr(quote, end-quote+1));
-            line = line.substr(end+1);
+            components.push_back(line.substr(quote, end - quote + 1));
+            line = line.substr(end + 1);
             quote = line.find("\"");
         }
         //Step 2. Remove the whitespaces.
         int whitespace = line.find(" ");
         while (whitespace != std::string::npos){
             components.push_back(line.substr(0, whitespace));
-            line = line.substr(whitespace+1);
+            line = line.substr(whitespace + 1);
             whitespace = line.find(" ");
         }
         //Step 3. Extract the operators and separators from Medium.cc.
@@ -81,6 +79,8 @@ namespace Interpreter {
         return components;
     }
 
+    //The string-to-lexeme identifier table to keep track of all user definitions.
+    std::map<std::string, Lexeme> identifiers;
     /// @brief Parses the extracted textual units into individual highly descriptive lexemes.
     /// @param components The list of string representations of lexemes in the code.
     /// @param flags An array of tokens to use to identify new identifier declarations.
@@ -117,9 +117,7 @@ namespace Interpreter {
                 if (identifiers.find(component) != identifiers.end()){
                     lexemes.push_back({flags[count], component});
                     count++;
-                }
-                    
-                else {
+                } else {
                     //TO-DO: implement valid-invalid identifier verification.
                     lexemes.push_back({flags[count], component});
                     count++;
