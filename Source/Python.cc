@@ -12,8 +12,8 @@ namespace Interpreter {
      * a command line interface tool and unites all 
      * components into read-execute-repeat loop.*/
     /// @brief Executes a single line of code in REP loop.
-    /// @param statement The string line to be executed.
-    void execute(std::string statement){}
+    /// @param line The stringline to be executed.
+    void execute(std::string line){}
 
     int main(){
         std::string line;

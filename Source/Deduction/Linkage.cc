@@ -11,4 +11,24 @@ namespace Interpreter {
      * table that can be used in the source code. Additionally 
      * to that, the linker stamps their locations and calls 
      * the dependent items once they are used within the code.*/
+    /// @brief Searches the dependent items in the Python library files and
+    /// adds them to the identifier table. Raises an exception if failed.
+    /// @param dependency The library to search.
+    void linkPythonDependency(std::string dependency, std::string* items){
+        
+    }
+
+    /// @brief Imports all the files from a Python library into the identifier table.
+    void linkPythonEverything(std::string dependency){
+
+    }
+    /// @brief Links outer dependencies commonly written in compiled languages for performance boost.
+    void linkCompiledDependency(std::string dependency, std::string* items){
+
+    }
+
+    /// @brief Imports all items from a compiled dependency.
+    void linkCompiledEverything(std::string dependency){
+
+    }
 };
