@@ -1,4 +1,4 @@
-/* GNU Lesser General Public License | Valdyslav Korol
+/* Mozilla Public License, v2 | Valdyslav Korol
  * This file specifies and implements the intermediate 
  * representation (IR) used to convey the source code.*/
 #include <iostream>

@@ -1,4 +1,4 @@
-/* GNU Lesser General Public License | Vladyslav Korol
+/* Mozilla Public License, v2 | Vladyslav Korol
  * This file takes care of command line integration and 
  * outputing various messages in response to commands.*/
 #include <iostream>

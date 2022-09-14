@@ -1,4 +1,4 @@
-/* GNU Lesser General Public License | Vladyslav Korol
+/* Mozilla Public License, v2 | Vladyslav Korol
  * This file validates the semantics of the source code
  * and makes sure it correlates to the language's rules.*/
 #include <iostream>

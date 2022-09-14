@@ -1,4 +1,4 @@
-/* GNU Lesser General Public License | Vladyslav Korol
+/* Mozilla Public License, v2 | Vladyslav Korol
  * The core of the interpreter that takes the source 
  * input and makes the series of external calls in the
  * namespace to execute the code. The app works in CLI. */

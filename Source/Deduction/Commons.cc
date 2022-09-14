@@ -1,4 +1,4 @@
-/* GNU Lesser General Public License | Vladyslav Korol
+/* Mozilla Public License, v2 | Vladyslav Korol
  * This file contains all the reusable pieces of code
  * that are needed at different stages of deduction.*/
 #include <string>

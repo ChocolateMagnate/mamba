@@ -1,4 +1,4 @@
-/* GNU Lesser General Public License | Vladyslav Korol
+/* Mozilla Public License, v2 | Vladyslav Korol
  * This file divides the Python source code into a table
  * of lexemes: keywords, ids, etc. for further parsing.*/
 #include <iostream>

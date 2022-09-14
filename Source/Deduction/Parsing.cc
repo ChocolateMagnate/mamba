@@ -1,4 +1,4 @@
-/* GNU Lesser General Public License | Vladyslav Korol
+/* Mozilla Public License, v2 | Vladyslav Korol
  * This files takes the stream of statement tokens and
  * parses them into a grammar tree describing the logic
  * of the program. At the end, it generates the Python
