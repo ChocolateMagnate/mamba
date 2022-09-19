@@ -34,6 +34,25 @@ namespace Interpreter {
     //The string-to-lexeme identifier table to keep track of all user definitions.
     auto *identifiers = new std::map<std::string, Lexeme>();
 
-    // Below is the dynamic typisation implementation.
+    class PyClass{
+        std::vector<int> properties, methods;
+        public:
+            int operator[](std::string key){
+                if (key == "Properties"){}
+                else if (key == "Methods"){}
+                else throw "No such member exists";
+            }
+    };
+    // The dictionaries of all objects, global functions and 
+    // defined classes that use strings as keys to their values.
+    std::map<
+        std::string, std::map<
+            std::string, std::vector<int>>> classes;
+    std::map<
+        std::string, std::map<
+            std::string, std::vector<std::string>>> objects;
+    std::map<
+        std::string, std::pair<
+            std::vector<std::string>, std::vector<int>>> functions;
     
 };
