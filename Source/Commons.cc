@@ -37,9 +37,9 @@ namespace Interpreter {
     class PyClass{
         std::vector<int> properties, methods;
         public:
-            int operator[](std::string key){
-                if (key == "Properties"){}
-                else if (key == "Methods"){}
+            int operator[](std::pair<std::string, std::string> key){
+                if (std::get<0>(key) == "Properties"){}
+                else if (std::get<0>(key) == "Methods"){}
                 else throw "No such member exists";
             }
     };
