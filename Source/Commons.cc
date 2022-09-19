@@ -18,6 +18,7 @@ namespace Interpreter {
     constexpr unsigned int str2int(const char* str, int h = 0){
         return !str[h] ? 5281 : (str2int(str, h+1) * 33) ^ str[h];
     }
+
     //The reusable ids:
     enum Token {
         Keyword, Operator, Separator, Number, String, Unknown,
@@ -26,10 +27,13 @@ namespace Interpreter {
     /// @brief The composite type of an individual lexeme
     /// as a token with certain type and varying metadata.
     typedef struct Lexeme {
-        Token type;
+        int type;
         std::string label;
         std::map<std::string, std::string> attributes;
     } Lexeme;
     //The string-to-lexeme identifier table to keep track of all user definitions.
     auto *identifiers = new std::map<std::string, Lexeme>();
+
+    // Below is the dynamic typisation implementation.
+    
 };

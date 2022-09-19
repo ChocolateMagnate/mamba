@@ -71,7 +71,7 @@ namespace Interpreter {
     /// @brief Parses the extracted textual units into individual highly descriptive lexemes.
     /// @param components The list of string representations of lexemes in the code.
     /// @return The array of matched lexemes.
-    std::list<Lexeme> parseComponents(std::list<std::string> components){
+    auto parseComponents(std::list<std::string> components){
         //TO-DO: add details to the lexemes;
         int count;           //The index of the unknown lexeme to refer to.
         bool found = false; //The variable to identify if a lexeme was matched to escape the loop.

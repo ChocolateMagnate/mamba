@@ -42,5 +42,5 @@ namespace Interpreter {
     /// interpreter's internal functions that execute said code. 
     /// @param graph The parsed line object that represents the grammar as a graph.
     /// @return The array of unsigned integers to switch.
-    int* generateIR(Bytecode graph){}
+    std::vector<int> generateIR(Bytecode graph){}
 };
