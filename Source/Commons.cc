@@ -47,12 +47,7 @@ namespace Interpreter {
             int begin(){}
             int end(){}
     };
-    /// @brief Represents Pythonic collections, such as lists, tuples, 
-    /// dictionaries and  custom data structures.
-    class PyCollection: public PyClass{
-        public:
-            int count;
-    };
+
     // The dictionaries of all objects, global functions and 
     // defined classes that use strings as keys to their values.
     std::map<

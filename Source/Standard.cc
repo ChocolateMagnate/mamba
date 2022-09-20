@@ -39,9 +39,14 @@ namespace Interpreter{
             }
             
     };
+
+    class PyCollection{
+        public:
+            int count;
+    };
     /// @brief The base data structure class that encompasses the essential
     /// operations shared between all basic collections that is inherited. 
-    class tuple {
+    class tuple : public PyCollection {
         protected:
             int count = -1;
             std::vector<PyGenericObject> items;
@@ -55,6 +60,7 @@ namespace Interpreter{
             }
             virtual void append(PyGenericObject value){
                 items.push_back(value);
+                count++;
             }
             bool contains(PyGenericObject value){
                 if (std::find(items.begin(), items.end(), value) != items.end()) return true;
@@ -79,14 +85,20 @@ namespace Interpreter{
             }
     };
     /// @brief Python dictionary class represented as a wrapper around C++ std::map.
-    class dict {
+    class dict : public PyCollection {
         public:
             std::vector<PyGenericObject> keys;
             std::map<PyGenericObject, PyGenericObject> content;
+            //Settting a new key-value pair:
             PyGenericObject operator[](std::pair<PyGenericObject, PyGenericObject> value){
                 content[value.first] = value.second;
                 keys.push_back(value.first);
+                count++;
             }  
+            //Getting value from the key:
+            PyGenericObject operator[](PyGenericObject key){
+                return content[key];
+            }
     };
 
     /// @brief Verifies if the boolean collection only contains true values.
