@@ -36,6 +36,8 @@ namespace Interpreter {
 
     class PyClass{
         public:
+            bool isNumeric;
+            double numeric;
             std::vector<int> properties, methods;
             int operator[](std::pair<std::string, std::string> key){
                 if (std::get<0>(key) == "Properties"){}
@@ -44,6 +46,12 @@ namespace Interpreter {
             }
             int begin(){}
             int end(){}
+    };
+    /// @brief Represents Pythonic collections, such as lists, tuples, 
+    /// dictionaries and  custom data structures.
+    class PyCollection: public PyClass{
+        public:
+            int count;
     };
     // The dictionaries of all objects, global functions and 
     // defined classes that use strings as keys to their values.
