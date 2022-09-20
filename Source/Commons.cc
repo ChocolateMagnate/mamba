@@ -35,13 +35,15 @@ namespace Interpreter {
     auto *identifiers = new std::map<std::string, Lexeme>();
 
     class PyClass{
-        std::vector<int> properties, methods;
         public:
+            std::vector<int> properties, methods;
             int operator[](std::pair<std::string, std::string> key){
                 if (std::get<0>(key) == "Properties"){}
                 else if (std::get<0>(key) == "Methods"){}
                 else throw "No such member exists";
             }
+            int begin(){}
+            int end(){}
     };
     // The dictionaries of all objects, global functions and 
     // defined classes that use strings as keys to their values.
@@ -54,5 +56,6 @@ namespace Interpreter {
     std::map<
         std::string, std::pair<
             std::vector<std::string>, std::vector<int>>> functions;
+    
     
 };
