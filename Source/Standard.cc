@@ -17,14 +17,33 @@ namespace Interpreter{
          * from member names to their description, which includes types and 
          * argument lists. Implements dynamic dispatch and prototyping.*/
         public:
+            std::list<//List of different constructors
+                std::pair<//Pairs of argument lists and the function
+                    std::list<std::string>, std::list<unsigned int>>> constructors;
             std::map<//Access modifiers
                 std::string, std::map<//Method names and
                     std::string, std::vector<//argument list.
                         std::string>>> methods;
             std::map<//Access modifiers
-                std::string, std::map<
+                std::string, std::map<//Names and types.
                     std::string, std::string>> properties;
-            
+            PyClass(
+                std::map<
+                    std::string, std::map<
+                        std::string, std::vector<
+                            std::string>>> methods,
+                std::map<
+                    std::string, std::map<
+                        std::string, std::string>> properties
+            ){
+                this->methods = methods;
+                this->properties = properties;
+            }
+            /// @brief Initialises a new object by prototyping the class template.
+            /// @return A new object of the describes class.
+            PyClass prototype(std::vector<std::pair<PyGenericObject, std::string>> arguments){
+
+            }
 
     };
     /// @brief The primary wrapper around any object in Python that describes
@@ -140,6 +159,98 @@ namespace Interpreter{
             PyGenericObject operator[](PyGenericObject key){
                 return content[key];
             }
+    };
+    /// @brief Pythonic wrapper around std::string with additional utilities.
+    class str : public std::string {
+        public:
+            /// @brief Splits the input string into sustrings by the delimiter.
+            /// @param delimeter The string to divide by.
+            /// @return A linked list of divided fragments.
+            std::list<std::string> split(PyGenericObject delimiter){
+                std::string text = delimiter.__str__();
+                std::list<std::string> fragmentedStrings;
+                int start = this->find(text);
+                while (start != std::string::npos){
+                    fragmentedStrings.push_back(text.substr(0, start));
+                    text = text.substr(start);
+                    start = this->find(text);
+                }
+                return fragmentedStrings;
+            }
+            /// @brief Splits the input string into substrings by the specified separators.
+            /// @param delimiters A set of strings to divide by.
+            /// @return A linked list of divided fragments.
+            std::list<std::string> split(std::vector<PyGenericObject> delimiters){
+                std::list<std::string> results;
+                for (PyGenericObject delimeter : delimiters)
+                    results.splice(results.end(), split(delimeter));
+                return results;
+            }
+            /// @brief Turns the first character in the string into uppercase.
+            void capitalize(){
+                std::transform(this->begin(), this->begin(), this->begin(), ::toupper);
+            }
+            /// @brief Converts string into lowercase.
+            void casefold(){
+                std::transform(this->begin(), this->end(), this, ::tolower);
+            }
+            /// @brief Counts the amount of times specific value occurs in the string.
+            /// @param repeatable The value that encounters in the string.
+            /// @return The number of occurrences.
+            int count(std::string repeatable){
+                int amount = 0;
+                int search = this->find(repeatable);
+                while (search != std::string::npos){
+                    repeatable = repeatable.substr(0, search);
+                    search = this->find(repeatable);
+                    amount++;
+                }
+                return amount;
+            }
+            /// @brief Verifies if the string ends with the given character. 
+            /// @return True if the last symbol is the character, otherwise false.
+            bool endswith(char character){
+                if (this->back() == character) return true;
+                return false;
+            }
+            /// @brief The wrapper around std::find.
+            /// @return The position of the first character of the occurrence found, otherwise -1.
+            int find(std::string value){
+                return this->find(value);
+            }
+            /// @brief Verifies if all characters in the string belong to the Latin alphabet.
+            /// @return True if all characters are alphabetic, false otherwise.
+            bool isalpha(){
+                const char alphabet[] = {'Q', 'q', 'W', 'w', 'E', 'e', 'R', 'r', 'T', 't', 
+                        'Y', 'y', 'U', 'u', 'I', 'i', 'O', 'o', 'P', 'A', 'a', 'S', 's', 
+                        'D', 'd', 'F', 'f', 'G', 'g', 'H', 'h', 'J', 'j', 'K', 'k', 'L', 'l',
+                        'Z', 'z', 'X', 'x', 'C', 'c', 'V', 'v', 'B', 'b', 'N', 'n', 'M', 'm'};
+                for (char character : this->begin())
+                    if (!std::find(alphabet[0], alphabet[50], character)) return false;
+                return true;
+            }
+            /// @brief Verifies is the string characters are alphanumeric.
+            /// @return True if all characters are from alphabet or numbers, false otherwise.
+            bool isalum(){
+                if (!isalpha()) return false;
+                const char numbers[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+                for (char character : this->begin())
+                    if (!std::find(numbers[0], numbers[9], character)) return false;
+                return true;
+            }
+            /// @brief Verifies if the string only constains ASCII characters.
+            /// @return True if all string characters are ASCII symbols, false otherwise.
+            bool isascii(){
+                if (!isalnum()) return false;
+                const char characters[] = {' ', '!', '"', '#', '$', '%', '&', '\'',
+                    '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>',
+                    '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~'};
+                for (char character : this->begin())
+                    if (!std::find(characters[0], characters[32], character)) return false;
+                return true;
+            }
+
+            
     };
 
     /// @brief Verifies if the boolean collection only contains true values.
