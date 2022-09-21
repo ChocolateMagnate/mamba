@@ -4,12 +4,29 @@
  * aspects that are imbued into the language itself.*/
 #include <iostream>
 #include <algorithm>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <list>
 #include <complex.h>
 #include "Commons.cc"
 namespace Interpreter{
+    /// @brief Describes the blueprint for custom classes in Python.
+    class PyClass{
+        /* This class represents user-defined types in Python as dictionaries
+         * from member names to their description, which includes types and 
+         * argument lists. Implements dynamic dispatch and prototyping.*/
+        public:
+            std::map<//Access modifiers
+                std::string, std::map<//Method names and
+                    std::string, std::vector<//argument list.
+                        std::string>>> methods;
+            std::map<//Access modifiers
+                std::string, std::map<
+                    std::string, std::string>> properties;
+            
+
+    };
     /// @brief The primary wrapper around any object in Python that describes
     /// it with a dictionary of properties and methods sorted by access modifiers.
     class PyGenericObject{
@@ -37,12 +54,34 @@ namespace Interpreter{
                             this->properties = properties;
                             this->methods = methods;
             }
-            
+            /// @brief Python constructor that deals with assigning all values to the properties.
+            void __init__(){}
+            /// @brief Gets the string representation of the object.
+            /// @return The string to be printed in the terminal.
+            std::string __str__(){
+                const void* pointer = static_cast<const void*>(this);
+                std::stringstream ss;
+                ss << pointer;
+                return ss.str();
+            }
+
+            std::string __repr__(){}
+
+
     };
 
-    class PyCollection{
-        public:
+    class PyCollection : public std::iterator<PyGenericObject, int>{
+        protected:
             int count;
+        public:
+            int size(){
+                return count;
+            }
+            virtual std::iterator<PyGenericObject, int> begin();
+            virtual std::iterator<PyGenericObject, int> end();
+            virtual std::iterator<PyGenericObject, int> advance();
+
+
     };
     /// @brief The base data structure class that encompasses the essential
     /// operations shared between all basic collections that is inherited. 
@@ -87,6 +126,8 @@ namespace Interpreter{
     /// @brief Python dictionary class represented as a wrapper around C++ std::map.
     class dict : public PyCollection {
         public:
+            //Keys must be stored individually because std::map does not 
+            //provide any public interface to access them, but Python does.
             std::vector<PyGenericObject> keys;
             std::map<PyGenericObject, PyGenericObject> content;
             //Settting a new key-value pair:
@@ -118,16 +159,16 @@ namespace Interpreter{
     /// @return The list of public properties and methods.
     auto dir(PyClass object){
         auto list = object.properties;
-        list.insert(object.methods);
+        list.insert(list.end(), object.methods.begin(), object.methods.end());
         return list;
     }
     /// @brief Enumerates through the given collection.
     /// @return A linked list of the index and value of the collection items.
-    std::list<std::pair<int, PyClass>>* enumerate(PyCollection collection){
+    std::list<std::pair<int, PyGenericObject>>* enumerate(PyCollection collection){
         int count = 0;
-        std::list<std::pair<int, PyClass>> *enumeration;
+        std::list<std::pair<int, PyGenericObject>> *enumeration;
         for (auto item : collection){
-            enumeration->push_back(std::pair<int, PyClass>(count, item));
+            enumeration->push_back(std::pair<int, PyGenericObject>(count, item));
             count++;
         }
         return enumeration;
@@ -148,7 +189,7 @@ namespace Interpreter{
     /// @brief Evaluates the length of the given collection object.
     /// @return The amount of items data structure currently holds.
     int len(PyCollection object){
-        return object.count;
+        return object.size();
     }
     /// @brief Seeks for the largest value in the collection.
     /// @return The biggest numeric value.
@@ -204,8 +245,12 @@ namespace Interpreter{
                 return result;
             }
     };
-
-    void print(std::string text){}
+    /// @brief Prints the object into the standard output.
+    void print(PyGenericObject object){
+        std::string text = object.__str__();
+        if (text != "") std::cout << text << "\n";
+        else std::cout << object.__repr__();
+    }
 
 
 };
