@@ -249,6 +249,34 @@ namespace Interpreter{
                     if (!std::find(characters[0], characters[32], character)) return false;
                 return true;
             }
+            /// @brief Verifies if the unicode string contains the decimal symbols.
+            /// @return True if string only constains digits, false otherwise.
+            bool isdecimal(){}
+            /// @brief Verifies if the string contains the decimal symbols.
+            /// @return True if string only constains digits, false otherwise.
+            bool isdigit(){
+                const char numbers[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+                for (char character : this->begin())
+                    if (!std::find(numbers[0], numbers[9], character)) return false;
+                return true;
+            }
+            /// @brief Defines if the string is a valid identifier.
+            /// @return True if the string can be used as a variable name, false otherwise.
+            bool isidentifier(){
+                //Verify if the string does not begin with a forbidden character.
+                const char banned[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ' '};
+                for (char character : banned)
+                    if (std::find(this->data(), this->data() + this->size(), character)) return false;
+                //Verify if the string only constains allowed symbols.
+                const char permitted[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_',
+                        'Q', 'q', 'W', 'w', 'E', 'e', 'R', 'r', 'T', 't', 'Y', 'y', 'U', 'u',
+                        'I', 'i', 'O', 'o', 'P', 'A', 'a', 'S', 's', 'D', 'd', 'F', 'f', 'G',
+                        'g', 'H', 'h', 'J', 'j', 'K', 'k', 'L', 'l', 'Z', 'z', 'X', 'x', 'C',
+                        'c', 'V', 'v', 'B', 'b', 'N', 'n', 'M', 'm'};
+                for (char character : permitted) 
+                    if (!std::find(this->data(), this->data() + this->size(), character)) return false;
+                return true;
+            }
 
             
     };
