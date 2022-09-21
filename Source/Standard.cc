@@ -11,6 +11,12 @@
 #include <complex.h>
 #include "Commons.cc"
 namespace Interpreter{
+    /* Python Standard includes a verity of predefined classes and functions
+     * that are automatically included by the interpreter itself. These include
+     * basic datatypes: int, float, complex; collections: list, tuple, dict; and
+     * built-in functions: len(), dir(), print(), etc. This file implements all 
+     * of them in C++ and also enables dynamic typisation with PyGenericObject.*/
+
     /// @brief Describes the blueprint for custom classes in Python.
     class PyClass{
         /* This class represents user-defined types in Python as dictionaries
@@ -88,7 +94,6 @@ namespace Interpreter{
 
 
     };
-
     class PyCollection : public std::iterator<PyGenericObject, int>{
         protected:
             int count;
@@ -102,6 +107,18 @@ namespace Interpreter{
 
 
     };
+    /// @brief Verifies if the input collection contains the search items.
+    /// @param collection The object to search in.
+    /// @param search The data to search.
+    /// @return True if collection contains at least one search item, otherwise false.
+    bool contains(PyCollection* collection, PyCollection* search){
+        for (PyGenericObject item : collection)
+            for (PyGenericObject searchItem : search)
+                if (std::find(search->begin(), search->end(), searchItem) != collection->end())
+                    return true;
+        return false;
+
+    }
     /// @brief The base data structure class that encompasses the essential
     /// operations shared between all basic collections that is inherited. 
     class tuple : public PyCollection {
@@ -162,27 +179,39 @@ namespace Interpreter{
     };
     /// @brief Pythonic wrapper around std::string with additional utilities.
     class str : public std::string {
+        /// @brief Encapsulates frequently used string searching technique in a separate method.
+        /// @param datatable The scope of characters to enumerate through.
+        /// @return True if the string contains one of the characters, false otherwise.
+        template <int size>
+        constexpr bool found(const char* datatable){//Resolve unmodifiable expression error
+            for (char character = *(datatable + size); size > 0; size--)
+                if (std::find(this->data(), this->data() + this->size(), character))
+                    return true;
+            return false;
+        } 
         public:
+            str(std::string text){
+                
+            }
             /// @brief Splits the input string into sustrings by the delimiter.
             /// @param delimeter The string to divide by.
             /// @return A linked list of divided fragments.
-            std::list<std::string> split(PyGenericObject delimiter){
-                std::string text = delimiter.__str__();
+            std::list<std::string> split(std::string delimiter){
                 std::list<std::string> fragmentedStrings;
-                int start = this->find(text);
+                int start = this->find(delimiter);
                 while (start != std::string::npos){
-                    fragmentedStrings.push_back(text.substr(0, start));
-                    text = text.substr(start);
-                    start = this->find(text);
+                    fragmentedStrings.push_back(this->substr(0, start));
+                    this->replace(start, delimiter.size(), this->substr(start));
+                    start = this->find(delimiter);
                 }
                 return fragmentedStrings;
             }
             /// @brief Splits the input string into substrings by the specified separators.
             /// @param delimiters A set of strings to divide by.
             /// @return A linked list of divided fragments.
-            std::list<std::string> split(std::vector<PyGenericObject> delimiters){
+            std::list<std::string> split(const std::vector<std::string> delimiters){
                 std::list<std::string> results;
-                for (PyGenericObject delimeter : delimiters)
+                for (std::string delimeter : delimiters)
                     results.splice(results.end(), split(delimeter));
                 return results;
             }
@@ -222,23 +251,23 @@ namespace Interpreter{
             /// @return True if all characters are alphabetic, false otherwise.
             bool isalpha(){
                 const char alphabet[] = {'Q', 'q', 'W', 'w', 'E', 'e', 'R', 'r', 'T', 't', 
-                        'Y', 'y', 'U', 'u', 'I', 'i', 'O', 'o', 'P', 'A', 'a', 'S', 's', 
+                        'Y', 'y', 'U', 'u', 'I', 'i', 'O', 'o', 'P', 'p', 'A', 'a', 'S', 's', 
                         'D', 'd', 'F', 'f', 'G', 'g', 'H', 'h', 'J', 'j', 'K', 'k', 'L', 'l',
                         'Z', 'z', 'X', 'x', 'C', 'c', 'V', 'v', 'B', 'b', 'N', 'n', 'M', 'm'};
-                for (char character : alphabet)
-                    if (!std::find(this->data(), this->data() + this->size(), character))
-                        return false;
-                return true;
+                return found<52>(alphabet);
+                //TO-DO: resolve expression unmodifiable error on the line 170.
+            }
+            /// @brief Verifies if the string consists of only numeric symbols.
+            /// @return True if all characters as 0-9, false otherwise.
+            bool isnumeric(){
+                const char numbers[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+                return found<10>(numbers);
             }
             /// @brief Verifies is the string characters are alphanumeric.
             /// @return True if all characters are from alphabet or numbers, false otherwise.
             bool isalum(){
                 if (!isalpha()) return false;
-                const char numbers[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-                for (char character : numbers)
-                    if (!std::find(this->data(), this->data() + this->size(), character))
-                        return false;
-                return true;
+                return isnumeric();
             }
             /// @brief Verifies if the string only constains ASCII characters.
             /// @return True if all string characters are ASCII symbols, false otherwise.
@@ -247,10 +276,7 @@ namespace Interpreter{
                 const char characters[] = {' ', '!', '"', '#', '$', '%', '&', '\'',
                     '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>',
                     '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~'};
-                for (char character : characters)
-                    if (!std::find(this->data(), this->data() + this->size(), character))
-                        return false;
-                return true;
+                return found<33>(characters);
             }
             /// @brief Verifies if the unicode string contains the decimal symbols.
             /// @return True if string only constains digits, false otherwise.
@@ -259,10 +285,7 @@ namespace Interpreter{
             /// @return True if string only constains digits, false otherwise.
             bool isdigit(){
                 const char numbers[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-                for (char character : numbers)
-                    if (!std::find(this->data(), this->data() + this->size(), character))
-                        return false;
-                return true;
+                return found<10>(numbers);
             }
             /// @brief Defines if the string is a valid identifier.
             /// @return True if the string can be used as a variable name, false otherwise.
@@ -275,15 +298,74 @@ namespace Interpreter{
                 //Verify if the string only constains allowed symbols.
                 const char permitted[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '_',
                         'Q', 'q', 'W', 'w', 'E', 'e', 'R', 'r', 'T', 't', 'Y', 'y', 'U', 'u',
-                        'I', 'i', 'O', 'o', 'P', 'A', 'a', 'S', 's', 'D', 'd', 'F', 'f', 'G',
-                        'g', 'H', 'h', 'J', 'j', 'K', 'k', 'L', 'l', 'Z', 'z', 'X', 'x', 'C',
-                        'c', 'V', 'v', 'B', 'b', 'N', 'n', 'M', 'm'};
-                for (char character : permitted) 
-                    if (!std::find(this->data(), this->data() + this->size(), character))
-                        return false;
-                return true;
+                        'I', 'i', 'O', 'o', 'P', 'p', 'A', 'a', 'S', 's', 'D', 'd', 'F', 'f', 
+                        'G', 'g', 'H', 'h', 'J', 'j', 'K', 'k', 'L', 'l', 'Z', 'z', 'X', 'x', 
+                        'C', 'c', 'V', 'v', 'B', 'b', 'N', 'n', 'M', 'm'};
+                return !found<63>(permitted);
             }
-
+            /// @brief Verifies if the whole string is lowercase.
+            /// @return True if all characters are lowercase, false otherwise.
+            bool islower(){
+                const char upper[] = {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O',
+                        'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X',
+                        'C', 'V', 'B', 'N', 'M'};
+                return !found<26>(upper);
+            }
+            /// @brief Verifies if the string can be printed in its full capacity.
+            /// @return True if all characters can be explicitly printed, false otherwise.
+            bool isprintable(){
+                const char unprintable[] = {'\r', '\n'}; //TO ADD other unprintable symbols.
+                return !found<2>(unprintable);
+            }
+            /// @brief Verifies if the string consists entirely from whitespaces.
+            /// @return True if all characters are whitespaces, false otherwise.
+            bool iswhitespace(){
+                const char spaces[] = {' ', '\t', '\n', '\r'};
+                return !found<4>(spaces);
+            }
+            /// @brief Verifies if the string follows the title convention rules.
+            /// @return True if all words are uppercase and the rest of the letters
+            /// are lowercase, false otherwise.
+            bool istitle(){
+                auto words = split(std::string(" "));
+                for (std::string word : words){
+                    //Verify the first letter is uppercase.
+                    switch (word[0]){
+                        case 'Q': case 'W': case 'E': case 'R': case 'T': case 'Y': case 'U': 
+                        case 'I': case 'O': case 'P': case 'A': case 'S': case 'D': case 'F':
+                        case 'G': case 'H': case 'J': case 'K': case 'L': case 'Z': case 'X':
+                        case 'C': case 'V': case 'B': case 'N': case 'M':
+                            continue;
+                        default:
+                            return false;
+                    }
+                    //Verify the rest of the letters are lowercase.
+                    for (int size = word.size() - 1; size > 0; size--){
+                        switch (word[0]){
+                            case 'Q': case 'W': case 'E': case 'R': case 'T': case 'Y': case 'U': 
+                            case 'I': case 'O': case 'P': case 'A': case 'S': case 'D': case 'F':
+                            case 'G': case 'H': case 'J': case 'K': case 'L': case 'Z': case 'X':
+                            case 'C': case 'V': case 'B': case 'N': case 'M':
+                                return false;
+                            default:
+                                continue;
+                        }
+                    }
+                }
+            }
+            /// @brief Serialises the input collection into string representations
+            /// and joins them with one string separated by its content.
+            /// @param enumerable The collection to join.
+            /// @return A joined string.
+            str join(PyCollection enumerable){
+                std::string base, result;
+                for (auto character = this->begin(); character < this->end(); character++)
+                    base += *character; //Saving the initial state of the string to append later.
+                std::list<std::string> collection;
+                for (PyGenericObject item : enumerable) collection.pop_back(item.__str__());
+                for (std::string item : collection) result += item + base;
+                return result;
+            }
 
     };
 
@@ -330,12 +412,6 @@ namespace Interpreter{
     /// @brief Verifies if the specified object is an instance of the input class.
     /// @return True if object belongs to the class, otherwise false.
     bool isinstance(PyClass object, std::string _class){}
-
-    /// @brief Evaluates the length of the given collection object.
-    /// @return The amount of items data structure currently holds.
-    int len(PyCollection object){
-        return object.size();
-    }
     /// @brief Seeks for the largest value in the collection.
     /// @return The biggest numeric value.
     double max(PyCollection items){
@@ -390,12 +466,15 @@ namespace Interpreter{
                 return result;
             }
     };
+    /// @brief Evaluates the length of the given collection object.
+    /// @return The amount of items data structure currently holds.
+    int len(PyCollection object){
+        return object.size();
+    }
     /// @brief Prints the object into the standard output.
     void print(PyGenericObject object){
         std::string text = object.__str__();
         if (text != "") std::cout << text << "\n";
         else std::cout << object.__repr__();
     }
-
-
 };

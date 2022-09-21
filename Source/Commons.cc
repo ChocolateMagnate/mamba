@@ -47,7 +47,6 @@ namespace Interpreter {
             int begin(){}
             int end(){}
     };
-
     // The dictionaries of all objects, global functions and 
     // defined classes that use strings as keys to their values.
     std::map<
