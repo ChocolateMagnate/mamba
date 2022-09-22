@@ -1,0 +1,5 @@
+Interpretation has a fundamental flaw compared to compilation, which is the performance loss. Generally, interpreters not only spend time on actually executing the code, but they need to decode the instructions hidden in the code and spend time understanding the code as well. This is why most sane interpreters these days make use of what is called *intermediate representation* in order to __cache__ the results of interpretation in some executable form, and then reuse it if no changes in code were detected and only edit it on demand in response to the changes that took place in the code itself.  
+
+Consequently, this interpreter decodes the Python source code into an IR, which by the design choice is a sequence of unsigned integers. In the main `execute()` function, there will be one large `switch` statement that executes certain instruction labelled with a unique number, and at the end the whole code execution comes down into squeezing the language into this sequence of calls. Here you can find what every integer correlates to and what it does:  
+
+# 1

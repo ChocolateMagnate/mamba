@@ -19,7 +19,7 @@ namespace Interpreter{
 
             //###########################
 
-            //    STANDARD IMPLEMENTATIONS    
+            //    STANDARD DYNAMISM     
 
             //###########################
 /// @brief Describes the blueprint for custom classes in Python.
@@ -65,6 +65,8 @@ class PyGenericObject{
         * and properties are encoded into numeric representation that is to 
         * parse into the actual data.*/
     public:
+        std::string type;
+        PyClass* typeReference;
         std::map<
             std::string, std::map<
                 std::string, unsigned int>> properties;
@@ -191,7 +193,7 @@ class str : public std::string {
     /// @brief Encapsulates frequently used string searching technique in a separate method.
     /// @param datatable The scope of characters to enumerate through.
     /// @return True if the string contains one of the characters, false otherwise.
-    template <int size>
+    template<int size>
     constexpr bool found(const char* datatable){//Resolve unmodifiable expression error
         for (char character = *(datatable + size); size > 0; size--)
             if (std::find(this->data(), this->data() + this->size(), character))
@@ -199,7 +201,15 @@ class str : public std::string {
         return false;
     } 
     public:
+        //TO-DO: implement array wrapping in the constructors below:
+        str(){}
+        str(const char*){}
         str(std::string text){}
+        /// @brief Attempts to convert Pythonic string into std::string for type safety purposes.
+        /// @return std::string equivalent, otherwise throws an exception.
+        std::string tryParseIntoString(){
+
+        }
         /// @brief Splits the input string into sustrings by the delimiter.
         /// @param delimeter The string to divide by.
         /// @return A linked list of divided fragments.
@@ -228,6 +238,7 @@ class str : public std::string {
         }
         /// @brief Converts string into lowercase.
         void casefold(){
+            //TO-DO: implement aggressive differences with lower().
             std::transform(this->begin(), this->end(), this, ::tolower);
         }
         /// @brief Counts the amount of times specific value occurs in the string.
@@ -373,6 +384,55 @@ class str : public std::string {
             for (std::string item : collection) result += item + base;
             return result;
         }
+        /// @brief Produces a new aligned string where the unfilled space is replaced.
+        /// @param distance The length of the new string.
+        /// @param symbol The symbol to replace the empty space with.
+        /// @return A new aligned string.
+        str ljust(int distance, char symbol = ' '){
+            if (this->size() >= distance) return *this;
+            int gap = distance - this->size();
+            return *this + std::string(gap, symbol);
+        }
+        /// @brief Converts the string into lowercase.
+        void lower(){
+            std::transform(this->begin(), this->end(), this, ::tolower);
+        }
+        /// @brief Removes any occurrance of the given characters from the beginning.
+        /// @param characters The characters to delete, by convention is a space.
+        /// @return A new trimmed Pythonic string.
+        str lstrip(std::string characters = " "){
+            int end = 0;
+            char symbol = characters[end];
+            while (characters.find(symbol) != std::string::npos) end++;
+            return str(this->substr(end));
+        }
+        /// @brief Replaces the characters in the string.
+        /// @param base The string to replace.
+        /// @param replace The string to replace base with.
+        /// @param deletion Optionally, what characters erase from the string entirely.
+        /// @return A new processed Pythonic string.
+        str maketrans(std::string base, str replacement = "", str deletion = ""){
+            str newstring = *this;
+            int lengthOfString = base.size();
+            int indexOfString = this->find(base);
+            while (indexOfString != std::string::npos){
+                newstring.replace(indexOfString, lengthOfString, replacement);
+                indexOfString = newstring.find(base);
+            }
+            int indexOfDeletion = this->find(deletion);
+            if (indexOfDeletion != std::string::npos || deletion != "")
+                return maketrans(newstring, deletion);
+            return newstring;
+        }
+        /// @brief Replaces the characters in the string.
+        /// @param dictionary The dictionary whose keys to replace with values.
+        /// @return A new processed Python string.
+        str maketrans(dict dictionary){
+            str result = *this;
+            for (std::pair<std::string, std::string> pair : dictionary)
+                result = result.maketrans(pair.first, pair.second);
+            return result;
+        }
 
 };
 /// @brief The lazy iterator range class in Python.
@@ -438,7 +498,7 @@ std::list<std::pair<int, PyGenericObject>>* enumerate(PyCollection collection){
 }
 /// @brief Takes user inout as a string from the terminal optionally printing a message before.
 /// @return The string output typed by user.
-std::string input(std::string message){
+std::string input(std::string message = ""){
     std::string slot;
     std::cout << message;
     std::cin >> slot;
@@ -452,22 +512,18 @@ bool isinstance(PyClass object, std::string _class){}
 /// @return The biggest numeric value.
 double max(PyCollection items){
     double biggest = 0;
-    for (auto item : items){
-        if (item.isNumeric){
+    for (auto item : items)
+        if (item.isNumeric)
             if (item.numeric > biggest) biggest = item.numeric;
-        }
-    }
     return biggest;
 }
 /// @brief Seeks the least numeric value in the collection.
 /// @return The smallest number given in the input.
 double min(PyCollection items){
     double least = 0;
-    for (auto item : items){
-        if (item.isNumeric){
+    for (auto item : items)
+        if (item.isNumeric)
             if (item.numeric < least) least = item.numeric; 
-        }
-    }
     return least;
 }
 /// @brief Extracts and returns the next value in the collection if applicable.
@@ -487,5 +543,9 @@ void print(PyGenericObject object){
     std::string text = object.__str__();
     if (text != "") std::cout << text << "\n";
     else std::cout << object.__repr__();
+}
+/// @brief Gets the type of the object as a string representation.
+str type(PyGenericObject object){
+    return std::string("<class ") + object.type + std::string(">");
 }
 };

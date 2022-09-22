@@ -12,6 +12,9 @@ namespace Interpreter {
      * a command line interface tool and unites all 
      * components into read-execute-repeat loop.*/
     
+    enum Instruction{
+        Import, Initialise, Reassign, 
+    };
     /// @brief Interprets the input line into machine-readable IR. 
     /// @return The array of integers to pass to the execute function.
     std::vector<int> interpret(std::string line){
