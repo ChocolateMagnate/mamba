@@ -46,6 +46,8 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "complex": "cpp"
+        "complex": "cpp",
+        "cerrno": "cpp",
+        "climits": "cpp"
     }
 }

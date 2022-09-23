@@ -3,6 +3,9 @@
  * This file implements the basic built-in datatypes in Python
  * such as int, float, str, lists dicts, etc. */
 #include <iostream>
+#include <vector>
+#include <tuple>
+#include <list>
 #include "Dynamism.cc"
 namespace Interpreter {
 
@@ -315,6 +318,42 @@ class str : public std::string {
             for (std::pair<std::string, std::string> pair : dictionary)
                 result = result.maketrans(pair.first, pair.second);
             return result;
+        }
+        /// @brief Replaces the gaps in the object with the specified values in O(2N).
+        /// @return Formatted Pythonic string with the filled gaps.
+        str format(std::vector<std::string> gaps){
+            int rows = 0;
+            int length = gaps.size();
+            std::string enumeration = *this;
+            std::list<std::array<int, 3>> table; //Start, end, gap.
+            //Validate the string and generate the index table.
+            for (std::string gap : gaps){
+                bool wrongSymbol = false;
+                int start = enumeration.find("{");
+                int end   = enumeration.find("}");
+                std::string medium = enumeration.substr(start, end);
+                for (char symbol : medium){
+                    switch (symbol){ //Make sure there are only numerals in the braces.
+                        case '0': case '1': case '2': case '3': case '4': 
+                        case '5': case '6': case '7': case '8': case '9': 
+                        case ' ': case '\t': //Empty braces imply the proper order.
+                            break;
+                        default:
+                            wrongSymbol = true;
+                            break;
+                    }
+                }
+                if (wrongSymbol) throw "Gaps can only contain indexes.";
+                table.push_back({start, end, rows});
+                rows++;
+                
+            }
+            //Replace the gaps with the indexed rows.
+            for (std::array<int, 3> row : table){
+                std::string::iterator start = this->begin() + std::get<0>(row);
+                std::string::iterator  end  = this->begin() + std::get<1>(row);
+                this->replace(start, end, gaps[std::get<2>(row)]);
+            }
         }
 
 };
