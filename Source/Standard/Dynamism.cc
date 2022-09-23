@@ -11,6 +11,7 @@
 #include <list>
 #include <complex.h>
 #include "Source/Commons.cc"
+
 namespace Interpreter{
 
             //###########################
@@ -21,7 +22,7 @@ namespace Interpreter{
 
 /// @brief Describes the blueprint for custom classes in Python.
 class PyClass{
-    /* This class represents user-defined types in Python as dictionaries
+       /* This class represents user-defined types in Python as dictionaries
         * from member names to their description, which includes types and 
         * argument lists. Implements dynamic dispatch and prototyping.*/
     public:
@@ -35,6 +36,9 @@ class PyClass{
         std::map<//Access modifiers
             std::string, std::map<//Names and types.
                 std::string, std::string>> properties;
+        PyClass(){
+            throw "Cannot create an empty class.";
+        }
         PyClass(
             std::map<
                 std::string, std::map<
@@ -65,8 +69,8 @@ class PyClass{
 };
 /// @brief The primary wrapper around any object in Python that describes
 /// it with a dictionary of properties and methods sorted by access modifiers.
-class PyGenericObject{
-    /* This class represents objects as dictionaries of their members
+class PyGenericObject : public PyClass {
+       /* This class represents objects as dictionaries of their members
         * sorted by the access modifiers. Methods are encoded with vectors
         * of unsigned integers that correlate the the main execution flow,
         * and properties are encoded into numeric representation that is to 
@@ -81,6 +85,10 @@ class PyGenericObject{
             std::string, std::map<
                 std::string, std::pair<
                     std::vector<std::string>, std::vector<unsigned int>>>> methods;
+        PyGenericObject(){
+            this->type = "object";
+            this->typeReference = nullptr;
+        }
         PyGenericObject(
             std::map<
                 std::string, std::map<
@@ -91,6 +99,7 @@ class PyGenericObject{
                     std::vector<std::string>, std::vector<unsigned int>>>> methods){
                         this->properties = properties;
                         this->methods = methods;
+                        //TO-DO: Add type inference.
         }
 
                     //UNARY OPERATIONS 
@@ -100,9 +109,7 @@ class PyGenericObject{
         PyInt __int__(){}
         /// @brief Converts the object into a real number representation.
         PyFloat __float__(){}
-        PyComplex __complex__(){}
-
-
+        //PyComplex __complex__(){}
 
                  // STRING MANIPULATION 
         /// @brief Gets the string representation of the object.
@@ -157,52 +164,92 @@ class PyGenericObject{
         /// @brief Overloads the >= operator.
         PyGenericObject __ge__(){}
 };
+#define PyCollection std::vector<PyGenericObject>
+/// @brief General interface for overloading 
+/// operators regarding arithmetic operations.
+/// @tparam type The numeric datatype: int, float, complex.
+template<typename type> class INumeric{
+    type base;
+    std::string __str__(){
+        return std::to_string(base);
+    }
+    type operator+(double addition){
+        return base + addition;
+    }
+    type operator-(double subtraction){
+        return base - subtraction;
+    }
+    type operator*(double multiplication){
+        return base * multiplication;
+    }
+    type operator/(double division){
+        return base / division;
+    }
+    type wholeDivide(double division){ // // operator
+        return round(base / division);
+    }
+    type operator%(double modulo){
+        return fmod(base, modulo);
+    }
+    type operator^(double power){
+        return pow(base, power);
+    }
+    bool operator<(double comparison){
+        return base < comparison;
+    }
+    bool operator<=(double comparison){
+        return base <= comparison;
+    }
+    bool operator==(double comparison){
+        return base == comparison;
+    }
+    bool operator!=(double comparison){
+        return base != comparison;
+    }
+    bool operator>=(double comparison){
+        return base >= comparison;
+    }
+    bool operator>(double comparison){
+        return base > comparison;
+    }
+    type operator+=(double addition){
+        return base += addition;
+    }
+    type operator-=(double subtraction){
+        return base -= subtraction;
+    }
+    type operator*=(double multiplication){
+        return base *= multiplication;
+    }
+    type operator/=(double division){
+        return base /= division;
+    }
+    type operator%=(double modulo){
+        return fmod(base, modulo);
+    }
+    type operator^=(double power){
+        return pow(base, power);
+    }
+    type operator++(int){
+        return base++;
+    }
+    type operator--(int){
+        return base--;
+    }
 
-class PyInt : public PyGenericObject{
-    public:
-        int base;
-        std::string __str__(){
-            return std::to_string(base);
-        }
-        int operator+(int integer){
-            return base + integer;
-        }
-        double operator+(double real){
-            return base + real;
-        }
 };
+//These are the basic numeric datatypes used in Python.
+class PyInt : public PyGenericObject, public INumeric<int>{};
+class PyFloat : public PyGenericObject, public INumeric<double>{};
+class PyComplex : public PyGenericObject, public INumeric<std::complex<float>>{};
 
-class PyFloat : public PyGenericObject{
-    public:
-        double base;
-        std::string __str__(){
-            return std::to_string(base);
-        }
-        double operator+(double real){
-            return base + real;
-        }
-};
-
-class PyComplex : public PyGenericObject {};
-/// @brief Generic interface for Python data structures used to enumerate through items in it.
-class PyCollection : public std::iterator<PyGenericObject, int>{
-    protected:
-        int count;
-    public:
-        int size(){
-            return count;
-        }
-        virtual std::iterator<PyGenericObject, int> begin();
-        virtual std::iterator<PyGenericObject, int> end();
-        virtual std::iterator<PyGenericObject, int> advance();
-};
 /// @brief Verifies if the input collection contains the search items.
 /// @param collection The object to search in.
 /// @param search The data to search.
 /// @return True if collection contains at least one search item, otherwise false.
 bool contains(PyCollection* collection, PyCollection* search){
-    for (PyGenericObject item : collection)
-        for (PyGenericObject searchItem : search)
+    for (PyGenericObject item : *collection)
+        for (PyGenericObject searchItem : *search)
             if (std::find(search->begin(), search->end(), searchItem) != collection->end())
                 return true;
     return false;

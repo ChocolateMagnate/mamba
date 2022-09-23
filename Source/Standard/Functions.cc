@@ -27,7 +27,7 @@ bool any(std::vector<bool> sequence){
 /// @brief Lists all properties and methods of the given object.
 /// @param object The Pythonic object whose public members to list.
 /// @return The list of public properties and methods.
-auto dir(PyClass object){
+auto dir(PyGenericObject object){
     auto list = object.properties;
     list.insert(list.end(), object.methods.begin(), object.methods.end());
     return list;
@@ -60,17 +60,16 @@ bool isinstance(PyClass object, std::string _class){}
 double max(PyCollection items){
     double biggest = 0;
     for (auto item : items)
-        if (item.isNumeric)
-            if (item.numeric > biggest) biggest = item.numeric;
+        if (item.__int__() > biggest) biggest = item.__int__();
     return biggest;
 }
 /// @brief Seeks the least numeric value in the collection.
 /// @return The smallest number given in the input.
 double min(PyCollection items){
-    double least = 0;
+    //TODO: take care of the type cohesion.
+    PyFloat least = PyFloat(0);
     for (auto item : items)
-        if (item.isNumeric)
-            if (item.numeric < least) least = item.numeric; 
+        if (item.__int__() < least) least = item.__int__(); 
     return least;
 }
 /// @brief Extracts and returns the next value in the collection if applicable.

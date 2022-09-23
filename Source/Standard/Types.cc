@@ -18,7 +18,7 @@ namespace Interpreter {
 
 /// @brief The base data structure class that encompasses the essential
 /// operations shared between all basic collections that is inherited. 
-class tuple : public PyCollection {
+class PyTuple : public PyCollection {
     protected:
         int count = -1;
         std::vector<PyGenericObject> items;
@@ -41,7 +41,7 @@ class tuple : public PyCollection {
 };
 /// @brief The utility class used to represent the subset of data
 /// structures as a vector of generic objects available by indexes.
-class list: public tuple {
+class PyList: public PyTuple {
     public:
         void remove(PyGenericObject value){}
         PyGenericObject pop(PyGenericObject value){}
@@ -50,14 +50,14 @@ class list: public tuple {
         }
 };
 /// @brief Unordered items containing only unique values.
-class set : public list {
+class PySet : public PyList {
     public:
         void append(PyGenericObject value) override {
             if (contains(value)) throw "Sets must contain only unique values.";
         }
 };
 /// @brief Python dictionary class represented as a wrapper around C++ std::map.
-class dict : public PyCollection {
+class PyDictionary {
     public:
         //Keys must be stored individually because std::map does not 
         //provide any public interface to access them, but Python does.
@@ -67,7 +67,6 @@ class dict : public PyCollection {
         PyGenericObject operator[](std::pair<PyGenericObject, PyGenericObject> value){
             content[value.first] = value.second;
             keys.push_back(value.first);
-            count++;
         }  
         //Getting value from the key:
         PyGenericObject operator[](PyGenericObject key){
@@ -98,7 +97,7 @@ class str : public std::string {
         }
         /// @brief Splits the input string into sustrings by the delimiter.
         /// @param delimeter The string to divide by.
-        /// @return A linked list of divided fragments.
+        /// @return A linked PyList of divided fragments.
         std::list<std::string> split(std::string delimiter){
             std::list<std::string> fragmentedStrings;
             int start = this->find(delimiter);
@@ -110,8 +109,8 @@ class str : public std::string {
             return fragmentedStrings;
         }
         /// @brief Splits the input string into substrings by the specified separators.
-        /// @param delimiters A set of strings to divide by.
-        /// @return A linked list of divided fragments.
+        /// @param delimiters A PySet of strings to divide by.
+        /// @return A linked PyList of divided fragments.
         std::list<std::string> split(const std::vector<std::string> delimiters){
             std::list<std::string> results;
             for (std::string delimeter : delimiters)
@@ -149,7 +148,7 @@ class str : public std::string {
         /// @brief The wrapper around std::find.
         /// @return The position of the first character of the occurrence found, otherwise -1.
         int find(std::string value){
-            return std::find<int>(this->begin(), this->end(), value);
+            return this->find(value);
         }
         /// @brief Verifies if all characters in the string belong to the Latin alphabet.
         /// @return True if all characters are alphabetic, false otherwise.
@@ -266,7 +265,7 @@ class str : public std::string {
             for (auto character = this->begin(); character < this->end(); character++)
                 base += *character; //Saving the initial state of the string to append later.
             std::list<std::string> collection;
-            for (PyGenericObject item : enumerable) collection.pop_back(item.__str__());
+            for (PyGenericObject item : enumerable) collection.push_back(item.__str__());
             for (std::string item : collection) result += item + base;
             return result;
         }
@@ -313,10 +312,10 @@ class str : public std::string {
         /// @brief Replaces the characters in the string.
         /// @param dictionary The dictionary whose keys to replace with values.
         /// @return A new processed Python string.
-        str maketrans(dict dictionary){
+        str maketrans(PyDictionary dictionary){
             str result = *this;
-            for (std::pair<std::string, std::string> pair : dictionary)
-                result = result.maketrans(pair.first, pair.second);
+            for (std::pair<PyGenericObject, PyGenericObject> pair : dictionary.content)
+                result = result.maketrans(pair.first.__str__(), pair.second.__str__());
             return result;
         }
         /// @brief Replaces the gaps in the object with the specified values in O(2N).
