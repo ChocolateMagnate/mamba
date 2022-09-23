@@ -7,6 +7,7 @@
 #include "CLI.cc"
 #include "Deduction/Inclusion.hpp"
 #include "Execution/Inclusion.hpp"
+#include "Standard/Inclusion.hpp"
 namespace Interpreter {
     /* The heart of the interpreter. It is built as
      * a command line interface tool and unites all 
