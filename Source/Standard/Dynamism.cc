@@ -47,11 +47,21 @@ class PyClass{
             this->methods = methods;
             this->properties = properties;
         }
-        /// @brief Initialises a new object by prototyping the class template.
-        /// @return A new object of the describes class.
-        PyClass prototype(std::vector<std::pair<PyGenericObject, std::string>> arguments){
+                    // OBJECT INITIALISATION    
+        /// @brief Generates a new instance of the object.
+        /// @param cls The template of the object. Using class by default.
+        /// @return A new uninitialised object.
+        PyClass __new__(PyClass cls){}
+        /// @brief Python constructor that deals with assigning all values to the properties.
+        void __init__(){}
+        /// @brief Removes the object from the memory in the process of garbage collection.
+        void __del__(){}
 
-        }
+                    // ATTRIBUTE MANAGEMENT
+        /// @brief Is used to add an initialise a new class attribute.
+        void __setattr__(){}
+        /// @brief Deletes certain property from class.
+        void __delattr__(){}
 };
 /// @brief The primary wrapper around any object in Python that describes
 /// it with a dictionary of properties and methods sorted by access modifiers.
@@ -82,27 +92,19 @@ class PyGenericObject{
                         this->properties = properties;
                         this->methods = methods;
         }
-        // OBJECT INITIALISATION    
-        /// @brief Generates a new instance of the object.
-        /// @param cls The template of the object. Using class by default.
-        /// @return A new uninitialised object.
-        PyClass __new__(PyClass cls){}
-        /// @brief Python constructor that deals with assigning all values to the properties.
-        void __init__(){}
-        /// @brief Removes the object from the memory in the process of garbage collection.
-        void __del__(){}
 
-        //UNARY OPERATIONS 
+                    //UNARY OPERATIONS 
 
-        //TYPE CONVERSION  
+                    //TYPE CONVERSION  
         /// @brief Converts the object to an integer representations.
         PyInt __int__(){}
         /// @brief Converts the object into a real number representation.
         PyFloat __float__(){}
-        PyComplex __complex__();
+        PyComplex __complex__(){}
 
 
 
+                 // STRING MANIPULATION 
         /// @brief Gets the string representation of the object.
         /// @return The string to be printed in the terminal.
         std::string __str__(){
@@ -111,12 +113,49 @@ class PyGenericObject{
             ss << pointer;
             return ss.str();
         }
-
+        /// @brief Converts the object into machine-friendly string representation.
+        /// @return The string used primarily by interpreter.
         std::string __repr__(){}
+        /// @brief Converts the object into a unicode representation.
+        /// @return Unicode string used by the unicode() function.
+        std::string __unicode__(){}
+        /// @brief Formats the objects into string representation used by str.format() method.
+        std::string __format__(std::string format){}
+        /// @brief Converts object into a hash.
+        /// @return The encoded form of the object that cannot be decoded but can be verified.
+        std::string __hash__(){}
+        /// @brief Formats the object as a boolean value.
+        /// @return True or false.
+        bool __nonzero__(){}
+        /// @brief Gets the size of the object that can be used for arbitrary purposes.
+        /// @return The size in any units designed by class writers.
+        int __sizeof__(){}
 
-
-
-
+                // OPERATOR OVERLOADING 
+        /// @brief Overloads the + operator.
+        PyGenericObject __add__(){}
+        /// @brief Overloads - operator.
+        PyGenericObject __sub__(){}
+        /// @brief Overloads the * operator.
+        PyGenericObject __mul__(){}
+        /// @brief Overloads the // operator.
+        PyGenericObject __flordiv__(){}
+        /// @brief Overloads the / operator.
+        PyGenericObject __truediv__(){}
+        /// @brief Overloads the % operator.
+        PyGenericObject __mod__(){}
+        /// @brief Overloads the ** operator.
+        PyGenericObject __pow__(){}
+        /// @brief Overloads the < operator.
+        PyGenericObject __lt__(){}
+        /// @brief Overloads the <== operator.
+        PyGenericObject __le__(){}
+        /// @brief Overloads the == operator.
+        PyGenericObject __eq__(){}
+        /// @brief Overloads the != operator.
+        PyGenericObject __ne__(){}
+        /// @brief Overloads the >= operator.
+        PyGenericObject __ge__(){}
 };
 
 class PyInt : public PyGenericObject{
@@ -169,7 +208,5 @@ bool contains(PyCollection* collection, PyCollection* search){
     return false;
 }
 
-PyComplex PyGenericObject::__complex__(){
 
-}
 };
