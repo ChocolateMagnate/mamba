@@ -320,33 +320,37 @@ class str : public std::string {
             return result;
         }
         /// @brief Replaces the gaps in the object with the specified values in O(2N).
+        /// @param gaps The vector of fragments to replace gaps with.
         /// @return Formatted Pythonic string with the filled gaps.
-        str format(std::vector<std::string> gaps){
-            int rows = 0;
-            int length = gaps.size();
+        void format(std::vector<std::string> gaps){
+            int index, rows = 0;
             std::string enumeration = *this;
             std::list<std::array<int, 3>> table; //Start, end, gap.
             //Validate the string and generate the index table.
             for (std::string gap : gaps){
                 bool wrongSymbol = false;
                 int start = enumeration.find("{");
-                int end   = enumeration.find("}");
-                std::string medium = enumeration.substr(start, end);
-                for (char symbol : medium){
-                    switch (symbol){ //Make sure there are only numerals in the braces.
-                        case '0': case '1': case '2': case '3': case '4': 
-                        case '5': case '6': case '7': case '8': case '9': 
-                        case ' ': case '\t': //Empty braces imply the proper order.
-                            break;
-                        default:
-                            wrongSymbol = true;
-                            break;
+                int  end  = enumeration.find("}");
+                if (start + 1 != end) {
+                    //If braces are empty like {}, then we proceed to the next 
+                    //part, otherwise we extract the index of gap inside them.
+                    std::string medium = enumeration.substr(start, end);
+                    for (char symbol : medium){
+                        switch (symbol){ //Make sure there are only numerals in the braces.
+                            case '0': case '1': case '2': case '3': case '4': 
+                            case '5': case '6': case '7': case '8': case '9': 
+                            case ' ': case '\0': //Empty braces imply the proper order.
+                                break;
+                            default:
+                                wrongSymbol = true;
+                                break;
+                        }
+                        if (wrongSymbol) throw "Gaps can only contain indexes.";
                     }
-                }
-                if (wrongSymbol) throw "Gaps can only contain indexes.";
-                table.push_back({start, end, rows});
+                    table.push_back({start, end, atoi(medium.c_str())});
+                } else table.push_back({start, end, rows});
+                enumeration = enumeration.substr(end + 1);
                 rows++;
-                
             }
             //Replace the gaps with the indexed rows.
             for (std::array<int, 3> row : table){
