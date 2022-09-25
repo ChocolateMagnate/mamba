@@ -78,9 +78,8 @@ class str : public std::string {
     /// @brief Encapsulates frequently used string searching technique in a separate method.
     /// @param datatable The scope of characters to enumerate through.
     /// @return True if the string contains one of the characters, false otherwise.
-    template<int size>
-    constexpr bool found(const char* datatable){//Resolve unmodifiable expression error
-        for (char character = *(datatable + size); size > 0; size--)
+    bool found(int len, const char* datatable){
+        for (char character = *datatable; len--; character = *--datatable)
             if (std::find(this->data(), this->data() + this->size(), character))
                 return true;
         return false;
@@ -157,14 +156,14 @@ class str : public std::string {
                     'Y', 'y', 'U', 'u', 'I', 'i', 'O', 'o', 'P', 'p', 'A', 'a', 'S', 's', 
                     'D', 'd', 'F', 'f', 'G', 'g', 'H', 'h', 'J', 'j', 'K', 'k', 'L', 'l',
                     'Z', 'z', 'X', 'x', 'C', 'c', 'V', 'v', 'B', 'b', 'N', 'n', 'M', 'm'};
-            return found<52>(alphabet);
+            return found(52, &alphabet[0]);
             //TO-DO: resolve expression unmodifiable error on the line 170.
         }
         /// @brief Verifies if the string consists of only numeric symbols.
         /// @return True if all characters as 0-9, false otherwise.
         bool isnumeric(){
             const char numbers[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-            return found<10>(numbers);
+            return found(10, &numbers[0]);
         }
         /// @brief Verifies is the string characters are alphanumeric.
         /// @return True if all characters are from alphabet or numbers, false otherwise.
@@ -179,7 +178,7 @@ class str : public std::string {
             const char characters[] = {' ', '!', '"', '#', '$', '%', '&', '\'',
                 '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<', '=', '>',
                 '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~'};
-            return found<33>(characters);
+            return found(33, &characters[0]);
         }
         /// @brief Verifies if the unicode string contains the decimal symbols.
         /// @return True if string only constains digits, false otherwise.
@@ -188,7 +187,7 @@ class str : public std::string {
         /// @return True if string only constains digits, false otherwise.
         bool isdigit(){
             const char numbers[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-            return found<10>(numbers);
+            return found(10, &numbers[0]);
         }
         /// @brief Defines if the string is a valid identifier.
         /// @return True if the string can be used as a variable name, false otherwise.
@@ -204,7 +203,7 @@ class str : public std::string {
                     'I', 'i', 'O', 'o', 'P', 'p', 'A', 'a', 'S', 's', 'D', 'd', 'F', 'f', 
                     'G', 'g', 'H', 'h', 'J', 'j', 'K', 'k', 'L', 'l', 'Z', 'z', 'X', 'x', 
                     'C', 'c', 'V', 'v', 'B', 'b', 'N', 'n', 'M', 'm'};
-            return !found<63>(permitted);
+            return !found(63, &permitted[0]);
         }
         /// @brief Verifies if the whole string is lowercase.
         /// @return True if all characters are lowercase, false otherwise.
@@ -212,19 +211,19 @@ class str : public std::string {
             const char upper[] = {'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O',
                     'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X',
                     'C', 'V', 'B', 'N', 'M'};
-            return !found<26>(upper);
+            return !found(26, &upper[0]);
         }
         /// @brief Verifies if the string can be printed in its full capacity.
         /// @return True if all characters can be explicitly printed, false otherwise.
         bool isprintable(){
             const char unprintable[] = {'\r', '\n'}; //TO ADD other unprintable symbols.
-            return !found<2>(unprintable);
+            return !found(2, &unprintable[0]);
         }
         /// @brief Verifies if the string consists entirely from whitespaces.
         /// @return True if all characters are whitespaces, false otherwise.
         bool iswhitespace(){
             const char spaces[] = {' ', '\t', '\n', '\r'};
-            return found<4>(spaces);
+            return found(4, &spaces[0]);
         }
         /// @brief Verifies if the string follows the title convention rules.
         /// @return True if all words are uppercase and the rest of the letters
