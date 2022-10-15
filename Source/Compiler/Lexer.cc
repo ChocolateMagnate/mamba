@@ -7,6 +7,8 @@
 #include <list>
 #include <map>
 #include "/workspaces/python-interpreter/Source/Commons.cc"
+#define append push_back
+#define substring substr
 using namespace std;
 namespace mamba {
     /* Tokenisation is always the first step done
@@ -23,11 +25,11 @@ namespace mamba {
         // Step 1. Clear unclosed multiline comment.
         if (closedLine) {
             int end = line.find("\"\"\"");
-            if (end != string::npos) line = line.substr(end + 3);
+            if (end != string::npos) line = line.substring(end + 3);
             else return {"", false};
         }
         int tag = line.find("#");
-        if (tag != string::npos) return {line.substr(0, tag), true};
+        if (tag != string::npos) return {line.substring(0, tag), true};
         int triple = line.find("\"\"\"");
         if (triple != string::npos) return clearComments(line, true);
         return {line, closedLine};
@@ -35,9 +37,10 @@ namespace mamba {
     /// @brief Extracts the string as a whole lexeme once a quote is found.
     /// @param elements The linked list of components to search in.
     /// @param start The index of the first quote.
-    /// @return Substring to insert into the identifiers.
+    /// @return substringing to insert into the identifiers.
     void extractStrings(list<string> elements, int start){
         int end = 0; 
+        cout << "Extracting string...\n";
         string extraction;
         list<string>::iterator it = elements.begin();
         for (string element : elements){
@@ -51,55 +54,70 @@ namespace mamba {
         }
         elements.insert(it, extraction);
     }
-
     /// @brief Splits the line into a linked list of individual
     /// meaningful parts that are ready to be parsed as lexemes.
     list<string> splitIntoComponents(string line){
         list<string> components; //TO-DO: implement multiline string 
                                 //with triple quotations detection.
+        cout << "Components initialised.\n";
         //Step 0. Extract the indentations.
         for (string indentation : mamba::indentations){
             int index = line.find(indentation);
             while (index != string::npos){
                 indentationCounter++;
                 line = line.replace(index, indentation.length(), "");
-                line = line.substr(index + 4);
+                line = line.substring(index + 4);
             }
         }
-        //Step 1. Remove the whitespaces and strings.
+        //Step 1. Remove the whitespaces.
         int whitespace = line.find(" ");
         while (whitespace != string::npos){
             int quotation = line.find('"');
-            components.push_back(line.substr(0, whitespace));
-            line = line.substr(whitespace + 1);
-            if (quotation != string::npos && quotation < whitespace){
-                extractStrings(components, quotation);
-                line = line.replace(quotation, 1, "");
-            }
+            components.append(line.substring(0, whitespace));
+            line = line.substring(whitespace + 1);
             whitespace = line.find(" ");
         }
-            
-        //Step 2. Extract the operators and separators from Commons.cc.
-        for (string separator : mamba::separators){
-            int index = line.find(separator);
-            while (index != string::npos){
-                components.push_back(line.substr(0, index));
-                components.push_back(separator);
-                line = line.erase(index);
-                index = line.find(separator);
-            }
+        cout << "Whitespaces removed.\n";
+        //Step 2. Extract the strings.
+        int start = line.find('"');
+        while (start != string::npos){
+            int end = line.find('"', start + 1);
+            extractStrings(components, start);
+            line = line.substring(start + 1) + line.substring(end + 1);
+            start = line.find('"');
         }
-        // operator is a C++ keyword, therefore we should 
-        // prefix it with an underscore to avoid ambiguity. 
-        for (string _operator : mamba::operators){
-            int index = line.find(_operator);
-            while (index != string::npos){
-                components.push_back(line.substr(0, index));
-                components.push_back(_operator);
-                line = line.erase(index);
-                index = line.find(_operator);
+        cout << "Strings extracted.\n";  
+        //Step 3. Extract the keywords and other symbols from Commons.cc.
+        bool found = false;
+        list<string>::iterator it = components.begin();
+        for (string component : components){
+            for (string keyword : mamba::keywords){
+                if (component.find(keyword) != string::npos){
+                    components.insert(it, keyword);
+                    found = true;
+                    break;
+                }
             }
+            if (found) break;
+            for (string _operator : mamba::operators){
+                if (component.find(_operator) != string::npos){
+                    components.insert(it, _operator);
+                    found = true;
+                    break;
+                }
+            }
+            if (found) break;
+            for (string separator : mamba::separators){
+                if (component.find(separator) != string::npos){
+                    components.insert(it, separator);
+                    break;
+                }
+            }
+            it++;
+            found = false;
         }
+
+        cout << "Keywords, operators and separators extracted.\n";
         return components;
     }
 
@@ -128,7 +146,7 @@ namespace mamba {
                  //operator is a C++ keyword, therefore we need
                 //to prefix it with an underscore to avoid ambiguity.
                 if (component == _operator){
-                    lexemes.push_back({Operator, component});
+                    lexemes.append({Operator, component});
                     found = true; break;
                 }
             }
@@ -136,7 +154,7 @@ namespace mamba {
                                 //going through the rest of lexemes when it was found.
             for (string keyword : keywords){
                 if (component == keyword){
-                    lexemes.push_back({Keyword, component});
+                    lexemes.append({Keyword, component});
                     found = true; break;
                 }
             }
@@ -145,7 +163,7 @@ namespace mamba {
                 //Separators are the rarest symbols in the code, hence they should 
                 //stay at the end to find other more frequent lexemes faster.
                 if (component == separator){
-                    lexemes.push_back({Separator, component});
+                    lexemes.append({Separator, component});
                     found = true; break;
                 }
             }
@@ -155,7 +173,7 @@ namespace mamba {
                 auto lookup = identifiers->find(component);
                 if (lookup != identifiers->end()){
                     //Thanks for www.geeksforgeeks.com/iterators-c-stl for the tutorial.
-                    lexemes.push_back({lookup->second.type, component});
+                    lexemes.append({lookup->second.type, component});
                     count++;
                 } else {
                     /* If id is unknown, we can verify if it is a name of a class or a 
@@ -164,11 +182,11 @@ namespace mamba {
                      * it. We will verify if the name declares a class or a function with
                      * previous variable and add it as an unknown token if it wasn't valid,
                      * and then if we detect an applicable equation mark, we will edit it.*/
-                    if (previous == "class") lexemes.push_back({Class, component});
-                    else if (previous == "def") lexemes.push_back({Function, component});
+                    if (previous == "class") lexemes.append({Class, component});
+                    else if (previous == "def") lexemes.append({Function, component});
                     else {
-                        lexemes.push_back({Unknown, component});
-                        unknowns.push_back(&(*lexemes.end()));
+                        lexemes.append({Unknown, component});
+                        unknowns.append(&(*lexemes.end()));
                         searchEquationMark = true;
                         count++;
                     }
