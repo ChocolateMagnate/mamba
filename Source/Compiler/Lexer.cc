@@ -17,7 +17,7 @@ namespace mamba {
      * identifiers. Once the code is presented as
      * steam of lexemes, it can be grammatically 
      * matched into a syntax tree and be executed.*/
-    unsigned int indentations = 0;
+    unsigned int indentationCounter = 0;
     /// @brief Cleanses tag comments from the line.
     pair<string, bool> clearComments(string line, bool closedLine = false){
         // Step 1. Clear unclosed multiline comment.
@@ -32,28 +32,54 @@ namespace mamba {
         if (triple != string::npos) return clearComments(line, true);
         return {line, closedLine};
     }
+    /// @brief Extracts the string as a whole lexeme once a quote is found.
+    /// @param elements The linked list of components to search in.
+    /// @param start The index of the first quote.
+    /// @return Substring to insert into the identifiers.
+    void extractStrings(list<string> elements, int start){
+        int end = 0; 
+        string extraction;
+        list<string>::iterator it = elements.begin();
+        for (string element : elements){
+            end = element.find('"', start + 1);
+            if (end == string::npos) end = element.find('\'', start + 1);
+            if (end != string::npos) {
+                extraction += element;
+                element.replace(0, element.length(), "");
+                it++;
+            }
+        }
+        elements.insert(it, extraction);
+    }
 
     /// @brief Splits the line into a linked list of individual
     /// meaningful parts that are ready to be parsed as lexemes.
     list<string> splitIntoComponents(string line){
         list<string> components; //TO-DO: implement multiline string 
-        //Step 1. Extract the strings.  //with triple quotations detection.
-        int quote = line.find('"');
-        while (quote != string::npos){
-            int end = line.find('"', quote + 1);
-            if (end == string::npos) break;
-            components.push_back(line.substr(quote, end - quote + 1));
-            line = line.substr(0, quote) + line.substr(end + 1);
-            quote = line.find('"');
+                                //with triple quotations detection.
+        //Step 0. Extract the indentations.
+        for (string indentation : mamba::indentations){
+            int index = line.find(indentation);
+            while (index != string::npos){
+                indentationCounter++;
+                line = line.replace(index, indentation.length(), "");
+                line = line.substr(index + 4);
+            }
         }
-        //Step 2. Remove the whitespaces.
+        //Step 1. Remove the whitespaces and strings.
         int whitespace = line.find(" ");
         while (whitespace != string::npos){
+            int quotation = line.find('"');
             components.push_back(line.substr(0, whitespace));
             line = line.substr(whitespace + 1);
+            if (quotation != string::npos && quotation < whitespace){
+                extractStrings(components, quotation);
+                line = line.replace(quotation, 1, "");
+            }
             whitespace = line.find(" ");
         }
-        //Step 3. Extract the operators and separators from Medium.cc.
+            
+        //Step 2. Extract the operators and separators from Commons.cc.
         for (string separator : mamba::separators){
             int index = line.find(separator);
             while (index != string::npos){
