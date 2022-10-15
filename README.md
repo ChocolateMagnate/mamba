@@ -1,4 +1,4 @@
-# Mamba, just-int-time Python
+# Mamba, just-in-time Python
 **Mamba** is the *just-in-time* compiled implementation of the Python programming language that aims to make Python faster and more convenient to ship. Any application written on Python has a common issue that it requires an interpreter to be installed in order to run anything, which makes it sophisticatedly hard to share any software written on it. As Python is famous for having a large verity of libraries for any use, **Mamba** aims to be the better implementation that will allow Python developers to make wider use of the language.  
 
 Mamba attempts to improve the issues the classic Python implementation is criticized for. Primarily, it allows asynchronous programming and significant speed gains suitable to be distributed to the end-users, while preserving complete backward computability with any existing code originally written in Python.
