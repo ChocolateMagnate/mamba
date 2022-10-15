@@ -1,9 +1,7 @@
-/* Mozilla Public License, v2 | Vladyslav Korol
- * This file contains all the reusable pieces of code
- * that are needed at different stages of deduction.*/
-#include <string>
 #include <map>
-namespace Interpreter {
+#include <string>
+#include <vector>
+namespace mamba{
     //The static lexemes:
     const std::string keywords[] = {"and", "as", "assert", "break", "class", "continue",
         "def", "del", "elif", "else", "except", "False", "finally", "for", "from", "global",
@@ -13,6 +11,7 @@ namespace Interpreter {
     const std::string operators[] = {"+=", "-=", "*=", "/=", "+", "-", "**", "*", 
                 "//", "/", "%", "==", "!=", "<=", ">=", "=", "<", ">",};
     const std::string separators[] = {"(", ")", "[", "]", "{", "}", ",", ".", ":", ";", "@"};
+    const std::string indentations[] = {"    ", "\t"};
     /// @brief The function used to convert const char* to arbitrary integer to switch them.
     /// @return A unique arbitrary constant expression integer that can be used in switch cases.
     constexpr unsigned int str2int(const char* str, int h = 0){
@@ -36,28 +35,10 @@ namespace Interpreter {
 
     class PyClass{
         public:
-            bool isNumeric;
-            double numeric;
             std::vector<int> properties, methods;
             int operator[](std::pair<std::string, std::string> key){
                 if (std::get<0>(key) == "Properties"){}
                 else if (std::get<0>(key) == "Methods"){}
-                else throw "No such member exists";
-            }
-            int begin(){}
-            int end(){}
+        }
     };
-    // The dictionaries of all objects, global functions and 
-    // defined classes that use strings as keys to their values.
-    std::map<
-        std::string, std::map<
-            std::string, std::vector<int>>> classes;
-    std::map<
-        std::string, std::map<
-            std::string, std::vector<std::string>>> objects;
-    std::map<
-        std::string, std::pair<
-            std::vector<std::string>, std::vector<int>>> functions;
-    
-    
 };

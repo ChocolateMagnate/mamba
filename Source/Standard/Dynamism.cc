@@ -106,10 +106,19 @@ class PyGenericObject : public PyClass {
 
                     //TYPE CONVERSION  
         /// @brief Converts the object to an integer representations.
-        PyInt __int__(){}
+        PyInt __int__(){
+            try {return PyInt(this->properties["public"]["value"]);}
+            catch (const char* e) {throw "Cannot convert to integer.";}
+        }
         /// @brief Converts the object into a real number representation.
-        PyFloat __float__(){}
-        //PyComplex __complex__(){}
+        PyFloat __float__(){
+            try {return PyFloat(this->properties["public"]["value"]);}
+            catch (const char* e) {throw "Cannot convert to float.";}
+        }
+        PyComplex __complex__(){
+            try {return PyComplex(this->properties["public"]["value"]);}
+            catch (const char* e) {throw "Cannot convert to complex.";}
+        }
 
                  // STRING MANIPULATION 
         /// @brief Gets the string representation of the object.
@@ -237,6 +246,17 @@ template<typename type> class INumeric{
         return base--;
     }
 
+};
+class PyBool : public PyGenericObject{
+    public:
+        bool base;
+        PyBool(std::string condition){
+            if (condition == "True") this->base = true;
+            else this->base = false;
+            this->type = "bool";
+            this->typeReference = nullptr;
+            this->properties["public"]["value"] = this->base ? 1 : 0;
+        }
 };
 //These are the basic numeric datatypes used in Python.
 class PyInt : public PyGenericObject, public INumeric<int>{};
