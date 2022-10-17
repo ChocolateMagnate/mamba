@@ -1,13 +1,13 @@
 #include "/workspaces/python-interpreter/Source/Compiler/Lexer.cc"
 #include <string>
-#define print(x) std::cout << x << "\n"
+#include <list>
+#include <iostream>
+#define print(x) for (auto item : x) std::cout << item.first << item.second << "\n"
 int main(){
     std::string code = "print(\"Hello World!\") #Hello world program";
-    auto commentless = mamba::clearComments(code);
-    auto components = mamba::splitIntoComponents(commentless.first);
-    std::cout << code << std::endl;
-    //std::cout << commentless.first << std::endl;
-    for (auto component : components) std::cout << component << std::endl;
-    std::cout << components.size() << std::endl;
+    std::list<std::string> components = {"print", "(", "\"Hello ",  "World!\"", ")", " ", "#Hello world program"};
+    for (auto x : mamba::extractStrings(&components))
+        std::cout << x.first << " " << x.second << "\n";
+    std::cout << "-------------------\n";
     return 0;
 }

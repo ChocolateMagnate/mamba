@@ -36,29 +36,48 @@ namespace mamba {
     }
     /// @brief Extracts the string as a whole lexeme once a quote is found.
     /// @param elements The linked list of components to search in.
-    /// @param start The index of the first quote.
-    /// @return substringing to insert into the identifiers.
-    void extractStrings(list<string> elements, int start){
-        int end = 0; 
-        cout << "Extracting string...\n";
-        string extraction;
-        list<string>::iterator it = elements.begin();
-        for (string element : elements){
-            end = element.find('"', start + 1);
-            if (end == string::npos) end = element.find('\'', start + 1);
-            if (end != string::npos) {
-                extraction += element;
-                element.replace(0, element.length(), "");
-                it++;
+    list<tuple<string, Token, bool>> extractStrings(string line, bool closedLine = true){
+        list<tuple<string, Token, bool>> components;
+        int start = 0, end = 0;
+        if (!closedLine){
+            end = line.find("\"\"\"");
+            if (end == string::npos){
+                end = line.find("\"");
+                if (end == string::npos) return list(tuple(line, Token::String, false));
+                else
+                    components.append(tuple(line.substring(0, end), Token::String, true));
             }
         }
-        elements.insert(it, extraction);
+        // Step 1. Extract all triple strings.
+        start = line.find("\"\"\"");
+        while (start != string::npos){
+            end = source.find("\"\"\"", start + 3);
+            if (end == string::npos){
+                components.append({line.substring(start), Token::String, false});
+                break;
+            }
+            components.append({line.substring(start, end + 3), Token::String, true});
+            start = line.find("\"\"\"", end + 3);
+        }
+        // Step 2. Extract all single strings.
+        start = line.find("\"");
+        while (start != string::npos){
+            end = line.find("\"", start + 1);
+            if (end == string::npos){
+                components.append({line.substring(start), Token::String, false});
+                break;
+            }
+            components.append({line.substring(start, end + 1), Token::String, true});
+            start = line.find("\"", end + 1);
+        }
+        return components;
     }
     /// @brief Splits the line into a linked list of individual
     /// meaningful parts that are ready to be parsed as lexemes.
     list<string> splitIntoComponents(string line){
         list<string> components; //TO-DO: implement multiline string 
                                 //with triple quotations detection.
+        list<string>* address = &components;
         cout << "Components initialised.\n";
         //Step 0. Extract the indentations.
         for (string indentation : mamba::indentations){
@@ -82,7 +101,7 @@ namespace mamba {
         int start = line.find('"');
         while (start != string::npos){
             int end = line.find('"', start + 1);
-            extractStrings(components, start);
+            extractStrings(address);
             line = line.substring(start + 1) + line.substring(end + 1);
             start = line.find('"');
         }
