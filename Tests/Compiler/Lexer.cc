@@ -8,7 +8,8 @@ int main(){
     std::string commentless = mamba::clearComments(code).first;
     std::cout << commentless << "\n";
     auto components = mamba::extractStrings(commentless);
-    print(components);
+    std::cout << "-----------------" << std::endl;
+    auto lexemes = mamba::buildLexemes(components);
     std::cout << "-----------------" << std::endl;
     return 0;
 }

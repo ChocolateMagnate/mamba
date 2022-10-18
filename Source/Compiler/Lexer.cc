@@ -42,13 +42,13 @@ namespace mamba {
     list<pair<string, Token>> extractStrings(string line, bool closedLine = true){
        list<pair<string, Token>> components;
        //The regular expressions to detect the strings in the source:
-       const char tripleQuotationExpression[] = "\"\"\"[a-zA-Z0-9_\\s]*\"\"\"";
+        smatch match; //The match object to store the results.
+       const char tripleQuotationExpression[] = "\"\"\"\"[^\"\"\"]*\"\"\"\"";
        const char doubleQuotationExpression[] = "\"[^\"]*\"";
-       const char singleQuotationExpression[] = "'[a-zA-Z0-9_\\s]*'";
+       const char singleQuotationExpression[] = "'[^']*'";
        regex tripleQuotationString(tripleQuotationExpression);
        regex doubleQuotation(doubleQuotationExpression);
        regex singleQuotation(singleQuotationExpression);
-       smatch match; //The match object to store the results.
        //Searching for the string patterns:   
        while (regex_search(line, match, doubleQuotation)) {
             cout << "Match : " << match.str() << endl; 
@@ -56,18 +56,52 @@ namespace mamba {
             line = line.substring(match.position() + match.length());
             components.append({before, Token::Unknown});
             components.append({match.str(), Token::String});
-            cout << "Appended : " << before << " and " << match.str() << endl;
        } 
        //If any other lexemes are left after the last string:
        if (line.length() > 0) components.append({line, Token::Unknown});
+       cout << "End of string extraction.\n";
        return components;
     }
+    /// @brief Divides the preprocessed string chain into further lexemes.
+    /// @param components The linked list of strings and other lexemes.
+    /// @return The sequence of lexemes ready to be parsed.
+    list<pair<string, Token>> buildLexemes(list<pair<string, Token>> components){
+        list<string> elements;
+        list<pair<string, Token>> lexemes;
+        for (pair<string, Token> component : components){
+            if (component.second == Token::String) elements.append(component.first);
+            else {
+                //Step 1. Split the component into meaningful parts.
+                int demiliter = component.first.find_first_of("[]{}()=+-*/%,.!?;:|&^");
+                while (demiliter != string::npos || demiliter < 0){
+                    string token = component.first.substring(0, demiliter);
+                    string demiliterSymbol{component.first[demiliter]};
+                    if (token != "") elements.append(token);
+                    elements.append(demiliterSymbol); 
+                    /*cout << "The component: " << component.first << "\n";
+                    cout << "Appended: " << token << "\n";
+                    cout << "Demiliter: " << demiliterSymbol << "\n";
+                    cout << "Demiliter position: " << demiliter << "\n";
+                    cout << "Size of the string: " << component.first.length() << "\n";*/
+                    //Anticipate if the demiliter is the last character in the string:
+                    if (demiliter >= component.first.length() - 1) break;
+                    component.first = component.first.substring(demiliter + 1);
+                    demiliter = component.first.find_first_of("[]{}()=+-*/%,.!?;:|&^", demiliter + 1);
+                }
+                if(component.first != "" || component.first == " ")
+                    elements.append(component.first);
+            }
+        }
+        //for (auto component : components) cout << component.first << "\n";
+        for (string element : elements) cout << element << "\n";
+        return lexemes;
+    }
+
+
     /// @brief Splits the line into a linked list of individual
     /// meaningful parts that are ready to be parsed as lexemes.
     list<string> splitIntoComponents(string line){
-        list<string> components; //TO-DO: implement multiline string 
-                                //with triple quotations detection.
-        list<string>* address = &components;
+        list<string> components; 
         cout << "Components initialised.\n";
         //Step 0. Extract the indentations.
         for (string indentation : mamba::indentations){
