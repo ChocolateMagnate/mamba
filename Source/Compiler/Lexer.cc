@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <regex>
 #include <list>
 #include <map>
 #include "/workspaces/python-interpreter/Source/Commons.cc"
@@ -34,43 +35,32 @@ namespace mamba {
         if (triple != string::npos) return clearComments(line, true);
         return {line, closedLine};
     }
-    /// @brief Extracts the string as a whole lexeme once a quote is found.
-    /// @param elements The linked list of components to search in.
-    list<tuple<string, Token, bool>> extractStrings(string line, bool closedLine = true){
-        list<tuple<string, Token, bool>> components;
-        int start = 0, end = 0;
-        if (!closedLine){
-            end = line.find("\"\"\"");
-            if (end == string::npos){
-                end = line.find("\"");
-                if (end == string::npos) return list(tuple(line, Token::String, false));
-                else
-                    components.append(tuple(line.substring(0, end), Token::String, true));
-            }
-        }
-        // Step 1. Extract all triple strings.
-        start = line.find("\"\"\"");
-        while (start != string::npos){
-            end = source.find("\"\"\"", start + 3);
-            if (end == string::npos){
-                components.append({line.substring(start), Token::String, false});
-                break;
-            }
-            components.append({line.substring(start, end + 3), Token::String, true});
-            start = line.find("\"\"\"", end + 3);
-        }
-        // Step 2. Extract all single strings.
-        start = line.find("\"");
-        while (start != string::npos){
-            end = line.find("\"", start + 1);
-            if (end == string::npos){
-                components.append({line.substring(start), Token::String, false});
-                break;
-            }
-            components.append({line.substring(start, end + 1), Token::String, true});
-            start = line.find("\"", end + 1);
-        }
-        return components;
+    /// @brief Divides the source code into a list of strings and other tokens.
+    /// @param line The processed line to be tokenised.
+    /// @param closedLine The flag to indicate if the line was closed by a multiline comment.
+    /// @return The list of extracted strings and other lexemes in order.
+    list<pair<string, Token>> extractStrings(string line, bool closedLine = true){
+       list<pair<string, Token>> components;
+       //The regular expressions to detect the strings in the source:
+       const char tripleQuotationExpression[] = "\"\"\"[a-zA-Z0-9_\\s]*\"\"\"";
+       const char doubleQuotationExpression[] = "\"[^\"]*\"";
+       const char singleQuotationExpression[] = "'[a-zA-Z0-9_\\s]*'";
+       regex tripleQuotationString(tripleQuotationExpression);
+       regex doubleQuotation(doubleQuotationExpression);
+       regex singleQuotation(singleQuotationExpression);
+       smatch match; //The match object to store the results.
+       //Searching for the string patterns:   
+       while (regex_search(line, match, doubleQuotation)) {
+            cout << "Match : " << match.str() << endl; 
+            string before = line.substring(0, match.position());
+            line = line.substring(match.position() + match.length());
+            components.append({before, Token::Unknown});
+            components.append({match.str(), Token::String});
+            cout << "Appended : " << before << " and " << match.str() << endl;
+       } 
+       //If any other lexemes are left after the last string:
+       if (line.length() > 0) components.append({line, Token::Unknown});
+       return components;
     }
     /// @brief Splits the line into a linked list of individual
     /// meaningful parts that are ready to be parsed as lexemes.
@@ -101,7 +91,7 @@ namespace mamba {
         int start = line.find('"');
         while (start != string::npos){
             int end = line.find('"', start + 1);
-            extractStrings(address);
+            //extractStrings(address);
             line = line.substring(start + 1) + line.substring(end + 1);
             start = line.find('"');
         }
