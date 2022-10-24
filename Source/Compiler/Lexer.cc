@@ -62,6 +62,27 @@ namespace mamba {
        cout << "End of string extraction.\n";
        return components;
     }
+
+    list<string> divideBy(string& line, vector<string>& delimiters, list<string> components = {}){
+        string delimiter = delimiters[0];
+        delimiters.erase(delimiters.begin());
+        int position = line.find(delimiter);
+        while (position != string::npos){
+            components.append(line.substring(0, position));
+            components.append(delimiter);
+            line = line.substring(position + delimiter.length());
+            position = line.find(delimiter);
+        }
+        if (delimiters.size() < 1) {
+            cout << "Recursion ended.\n";
+            return components;
+        }
+        else {
+            cout << "Recursion time!\n";
+            return divideBy(line, delimiters, components);
+        }
+    }
+
     /// @brief Divides the preprocessed string chain into further lexemes.
     /// @param components The linked list of strings and other lexemes.
     /// @return The sequence of lexemes ready to be parsed.
@@ -69,30 +90,48 @@ namespace mamba {
         list<string> elements;
         list<pair<string, Token>> lexemes;
         for (pair<string, Token> component : components){
-            if (component.second == Token::String) elements.append(component.first);
+            if (component.second == Token::String) {
+                elements.append(component.first);
+                cout << "String is " << component.first << endl;
+            }
             else {
-                //Step 1. Split the component into meaningful parts.
-                int demiliter = component.first.find_first_of("[]{}()=+-*/%,.!?;:|&^");
+                //Step 1. Split the string by whitespaces.
+                unsigned int whitespace = component.first.find(" ");
+                if (whitespace != string::npos) {
+                    elements.append(component.first.substring(0, whitespace));
+                    elements.append(component.first.substring(whitespace + 1));
+                }
+                else elements.append(component.first);
+                for (auto element : elements) cout << "Element is " << element << endl;
+                //Step 2. Split the component into meaningful parts.
+                /*                                                            .
+                unsigned demiliter = component.first.find_first_of("[]{}()=+-* /%,.!?;:|&^");
                 while (demiliter != string::npos || demiliter < 0){
-                    string token = component.first.substring(0, demiliter);
+                    string token = component.first.substring(0, demiliter + 1);
+
                     string demiliterSymbol{component.first[demiliter]};
-                    if (token != "") elements.append(token);
+                    if (token != "" || token != " ") elements.append(token);
                     elements.append(demiliterSymbol); 
+                    cout << "Token is " << token << endl;
+                    cout << "Demiliter is " << demiliterSymbol << endl;
                     /*cout << "The component: " << component.first << "\n";
                     cout << "Appended: " << token << "\n";
                     cout << "Demiliter: " << demiliterSymbol << "\n";
                     cout << "Demiliter position: " << demiliter << "\n";
-                    cout << "Size of the string: " << component.first.length() << "\n";*/
+                    cout << "Size of the string: " << component.first.length() << "\n";
                     //Anticipate if the demiliter is the last character in the string:
                     if (demiliter >= component.first.length() - 1) break;
                     component.first = component.first.substring(demiliter + 1);
-                    demiliter = component.first.find_first_of("[]{}()=+-*/%,.!?;:|&^", demiliter + 1);
+                                                                        .
+                    demiliter = component.first.find_first_of("[]{}()=+-* /%,.!?;:|&^", demiliter + 1);
                 }
-                if(component.first != "" || component.first == " ")
+                if(component.first != "" || component.first != " ")
                     elements.append(component.first);
+                */
             }
         }
-        //for (auto component : components) cout << component.first << "\n";
+        //Remove the blank elements:
+        elements.remove_if([](string element){return element == " ";});
         for (string element : elements) cout << element << "\n";
         return lexemes;
     }
