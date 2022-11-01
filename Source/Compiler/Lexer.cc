@@ -63,25 +63,28 @@ namespace mamba {
        return components;
     }
 
-    list<string> divideBy(string& line, vector<string>& delimiters, list<string> components = {}){
-        string delimiter = delimiters[0];
-        delimiters.erase(delimiters.begin());
-        int position = line.find(delimiter);
-        while (position != string::npos){
-            components.append(line.substring(0, position));
-            components.append(delimiter);
-            line = line.substring(position + delimiter.length());
-            position = line.find(delimiter);
-        }
-        if (delimiters.size() < 1) {
-            cout << "Recursion ended.\n";
-            return components;
-        }
-        else {
-            cout << "Recursion time!\n";
-            return divideBy(line, delimiters, components);
+
+list<string> breakDown(string& line, vector<string>& delimiters){
+    list<string> lexemes;
+    unsigned int lastToken = 0;
+    list<string>::iterator it = lexemes.begin();
+    for (string delimiter : delimiters){
+        unsigned int position = line.find(delimiter);
+        if (position != string::npos){
+            string before = line.substring(0, position - 1);
+            string after = line.substring(position + delimiter.length() + 1);
+            if (lexemes.size() < 1){
+                lexemes.append(before);
+                lexemes.append(delimiter);
+                lexemes.append(after);
+            }
+            
+            ++it;
         }
     }
+    return lexemes;
+}
+
 
     /// @brief Divides the preprocessed string chain into further lexemes.
     /// @param components The linked list of strings and other lexemes.
