@@ -6,7 +6,7 @@
 int main(){
     std::string code = "a = 5\nprint(\"Hello World!\" + \"We are from Ukraine!\")";
     std::vector<std::string> delimiters = {"[", "]", "{", "}", "(", ")", "=", ",", ":", ";", "+"};
-    auto lexemes2 = mamba::breakDown(code, delimiters);
+    auto lexemes2 = mamba::breakDown(code);
     print(lexemes2);
 
 

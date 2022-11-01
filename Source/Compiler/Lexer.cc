@@ -7,6 +7,7 @@
 #include <regex>
 #include <list>
 #include <map>
+//#include <boost/algorithm/string.hpp>
 #include "/workspaces/python-interpreter/Source/Commons.cc"
 #define append push_back
 #define substring substr
@@ -64,23 +65,20 @@ namespace mamba {
     }
 
 
-list<string> breakDown(string& line, vector<string>& delimiters){
+list<string> breakDown(string& line){
     list<string> lexemes;
-    unsigned int lastToken = 0;
-    list<string>::iterator it = lexemes.begin();
-    for (string delimiter : delimiters){
-        unsigned int position = line.find(delimiter);
-        if (position != string::npos){
-            string before = line.substring(0, position - 1);
-            string after = line.substring(position + delimiter.length() + 1);
-            if (lexemes.size() < 1){
-                lexemes.append(before);
-                lexemes.append(delimiter);
-                lexemes.append(after);
-            }
-            
-            ++it;
-        }
+    //const char expression[] = "[=-,;()[]]";
+    regex delimiters("((\(\)\[\]=-,;)|(\(\)\[\]=-,;)+)");
+    regex_iterator<string::iterator> it(line.begin(), line.end(), delimiters);
+    regex_iterator<string::iterator> end;
+    while (it != end) {
+        auto match = *it;
+        cout << "Match : " << match.str() << endl; 
+        string before = line.substring(0, match.position());
+        line = line.substring(match.position() + match.length());
+        lexemes.append(before);
+        lexemes.append(match.str());
+        it++;
     }
     return lexemes;
 }
