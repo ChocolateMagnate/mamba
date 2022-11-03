@@ -22,7 +22,7 @@ namespace mamba {
      * identifiers. Once the code is presented as
      * steam of lexemes, it can be grammatically 
      * matched into a syntax tree and be executed.*/
-    unsigned int indentationCounter = 0;
+    unsigned int spaceCounter = 0;
     bool isnumber(const char* str){
         char character = str[0];
         while (character != '\0'){
@@ -47,10 +47,21 @@ namespace mamba {
     }
     /// @brief Takes a line of code and tokenises it into a list of lexemes.
     /// @param line The standard string to be tokenised.
+    /// @param closedLine Indicates if the line continiues statements from the previous line.
     /// @return Vector of pairs of const char* and the token type.
-    std::vector<std::pair<const char*, mamba::Token>> buildLexemes(std::string line){
+    std::vector<std::pair<const char*, mamba::Token>> buildLexemes(std::string line, bool closedLine = false){
         std::vector<std::pair<const char*, mamba::Token>> lexemes;
         lexemes.resize(20); //Lexemes is an offset array.
+        if (!closedLine){
+            for (char beginning : line){ //This loop accepts both tabs and spaces.
+                if (beginning == '\t' || spaceCounter <= 4) {
+                    lexemes.append({"", mamba::Token::Indentation});
+                    spaceCounter = 0;
+                } else if (beginning == ' ') spaceCounter++;
+                else break;
+            }
+        }
+
     /* The regular expression matches:
         1. \"\"\"\"[^\"\"\"]*\"\"\"\" any triple string;
         2. \"[^\"]*\" any double string;
