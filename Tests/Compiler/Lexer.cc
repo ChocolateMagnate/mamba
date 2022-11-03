@@ -2,13 +2,13 @@
 #include <string>
 #include <list>
 #include <iostream>
-#define print(x) for (auto item : x) std::cout << item << "\n"
+#define print(x) for (auto item : x) std::cout << item.first << "\n"
 int main(){
-    std::string code = "a = 5\nprint(\"Hello World!\" + \"We are from Ukraine!\")";
-    std::vector<std::string> delimiters = {"[", "]", "{", "}", "(", ")", "=", ",", ":", ";", "+"};
-    auto lexemes2 = mamba::breakDown(code);
-    print(lexemes2);
-
-
+    auto lexemes2 = mamba::buildLexemes("print(\"Hello !, \" + \"World !, \")");
+    //print(lexemes2);
+    for (auto lexeme : lexemes2){
+        std::cout << lexeme.first << " " <<  "\n";
+    }
+    std::cout << "Done!\n";
     return 0;
 }

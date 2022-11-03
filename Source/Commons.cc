@@ -20,8 +20,12 @@ namespace mamba{
 
     //The reusable ids:
     enum Token {
-        Keyword, Operator, Separator, Number, String, Unknown,
-        Class, Function, Object, Constant, Module, Indentation
+        Keyword, Number, String, Unknown, Class, Function, Object,
+        Constant, Module, Indentation, Plus, Minus, Multiply, Divide,
+        Modulo, Power, Equal, NotEqual, Less, Greater, LessEqual, GreaterEqual,
+        PlusEqual, MinusEqual, MultiplyEqual, DivideEqual, LeftParenthesis,
+        RightParenthesis, LeftBracket, RightBracket, LeftBrace, RightBrace,
+        Comma, Dot, Colon, Semicolon, At
     };
     /// @brief The composite type of an individual lexeme
     /// as a token with certain type and varying metadata.
