@@ -4,7 +4,7 @@
 #include <iostream>
 #define print(x) for (auto item : x) std::cout << item.first << "\n"
 int main(){
-    auto lexemes2 = mamba::buildLexemes("print(\"!! World,\" + \"!! World,\")");
+    auto lexemes2 = mamba::buildLexemes("\tprint(\"!! World,\" + \"!! World,\")");
     //print(lexemes2);
     for (auto lexeme : lexemes2){
         std::cout << lexeme.first << " " << "\n";

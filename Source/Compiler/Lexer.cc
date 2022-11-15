@@ -9,10 +9,11 @@
 #include <map>
 //#include <boost/algorithm/string.hpp>
 #include "/workspaces/python-interpreter/Source/Commons.cc"
+#include "Lexer.hh"
+#include "Compiler.hh"
 #define append push_back
 #define substring substr
 using mamba::str2int;
-using namespace std;
 namespace mamba {
     /* Tokenisation is always the first step done
      * in any programming language. It deals with
@@ -22,27 +23,19 @@ namespace mamba {
      * identifiers. Once the code is presented as
      * steam of lexemes, it can be grammatically 
      * matched into a syntax tree and be executed.*/
-    unsigned int spaceCounter = 0;
-    bool isnumber(const char* str){
-        char character = str[0];
-        while (character != '\0'){
-            if (character < '0' || character > '9') return false;
-            character = str[++character];
-        }
-        return true;
-    }
+    unsigned int spaceCounter = 0; //Is used to count indentations.
     /// @brief Cleanses tag comments from the line.
-    pair<string, bool> clearComments(string line, bool closedLine = false){
+    std::pair<std::string, bool> clearComments(std::string line, bool closedLine = false){
         // Step 1. Clear unclosed multiline comment.
         if (closedLine) {
             int end = line.find("\"\"\"");
-            if (end != string::npos) line = line.substring(end + 3);
+            if (end != std::string::npos) line = line.substring(end + 3);
             else return {"", false};
         }
         int tag = line.find("#");
-        if (tag != string::npos) return {line.substring(0, tag), true};
+        if (tag != std::string::npos) return {line.substring(0, tag), true};
         int triple = line.find("\"\"\"");
-        if (triple != string::npos) return clearComments(line, true);
+        if (triple != std::string::npos) return clearComments(line, true);
         return {line, closedLine};
     }
     /// @brief Takes a line of code and tokenises it into a list of lexemes.
@@ -62,7 +55,7 @@ namespace mamba {
             }
         }
 
-    /* The regular expression matches:
+        /* The regular expression matches:
         1. \"\"\"\"[^\"\"\"]*\"\"\"\" any triple string;
         2. \"[^\"]*\" any double string;
         3. '[^']*' any single string;
@@ -81,7 +74,7 @@ namespace mamba {
                 lexemes.append({fragment, mamba::Token::String});
                 continue;
             }
-            if (isnumber(fragment)) {
+            if (atoi(fragment)) {
                 lexemes.append({fragment, mamba::Token::Number});
                 continue;
             } 
@@ -163,7 +156,7 @@ namespace mamba {
                 case str2int(";"):
                     token = mamba::Token::Semicolon; break;
             }
-            lexemes.push_back({match.str().c_str(), token});
+            lexemes.append({match.str().c_str(), token});
         }
         return lexemes;
     }
