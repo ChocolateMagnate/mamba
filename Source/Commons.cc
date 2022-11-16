@@ -1,17 +1,8 @@
 #include <map>
 #include <string>
 #include <vector>
-namespace mamba{
-
-    //The string-to-lexeme identifier table to keep track of all user definitions.
-    auto *identifiers = new std::map<std::string, Lexeme>();
-
-   /* class PyClass{
-        public:
-            std::vector<int> properties, methods;
-            int operator[](std::pair<std::string, std::string> key){
-                if (std::get<0>(key) == "Properties"){}
-                else if (std::get<0>(key) == "Methods"){}
-        }
-    };*/
-};
+/// @brief The function used to convert const char* to arbitrary integer to switch them.
+/// @return A unique arbitrary constant expression integer that can be used in switch cases.
+constexpr unsigned int str2int(const char* str, int h = 0){
+        return !str[h] ? 5281 : (str2int(str, h+1) * 33) ^ str[h];
+}

@@ -1,12 +1,12 @@
-/* Mozilla Public License, v2 | Vladyslav Korol
+/* Mamba Python by Vladyslav Korol | Apache License 2.0 
  * This file takes care of command line integration and 
  * outputing various messages in response to commands.*/
 #include <iostream>
 #include <fstream>
 #include <string>
 #include "Commons.cc"
-#define trigger "academic-python" //The word that is recognised as the CLI trigger.
-namespace Interpreter {
+#define trigger "mamba" //The word that is recognised as the CLI trigger.
+namespace mamba {
     /// @brief The welcome message printed when the interpreter is triggered.
     void welcome(){
         std::cout << "Academic Python v1 Copyright Vladyslav Korol (@ChocolateMagnate)\n" <<
