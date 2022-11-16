@@ -3,6 +3,7 @@
 //  2. The mamba::str2int function;
 //  3. The mamba::Lexeme struct;
 //  4. Keywords, operators, separators and indentations arrays.
+#pragma once
 #include <string>
 #include <map>
 namespace mamba {
