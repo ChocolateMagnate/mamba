@@ -1,14 +1,18 @@
 #pragma once
 #include <string>
 namespace mamba {
-
-    class Algorithm {
-
+    /// @brief Basic representation of Python function as a functor object.
+    class Function {
+        public:
+            /// @brief The function to be executed.
+            /// @param args The arguments to be passed to the function.
+            /// @return The result of the function.
+            virtual void operator()(const char** args);
     };
     /// @brief Describes Pythonic lazy generators and iterators.
     class Generator {
         public:
-            Generator(Algorithm& function);
+            Generator(Function& function);
             Bitset generate(); //Yields the next value.
     };
     /// @brief The basic bitset used to represent fluid data.
@@ -58,11 +62,12 @@ namespace mamba {
 
     };
 
+    /// @brief Implements absolute-precision floating point numbers as a bitset.
     class Float : public Bitset {};
 
     class String : public Bitset {
         public:
-            String();
+            String(unsigned int size = 2);
             String(const char* value);
             String(const std::string& value);
             String(const String& other);
@@ -95,6 +100,7 @@ namespace mamba {
             char operator[](const Generator& range);
             void operator~();
 
+            const char* toConstChar() const;
             unsigned int size() const;
             Bitset split(const String* delimiters);
             Bitset split(const char** delimiters);
@@ -175,6 +181,51 @@ namespace mamba {
             void setdefault(const Bitset& key, const Bitset& default);
             void update(const Bitset& other);
             void update(const Bitset& other, const Bitset& other2);
-
     };
+
+    /// @brief Describes the built-in list class.
+    class List : public Bitset {
+        public:
+            List();
+            List(const List& other);
+            List(const List&& other);
+            List(const Bitset& other); //List conversion constructor.
+            List& operator=(const List& other);
+            List& operator=(List&& other);
+            ~List();
+
+            List operator+(const List& other);
+            List operator-(const List& other);
+            List operator*(const List& other);
+            List operator/(const List& other);
+            bool operator|(const List& other);
+            List operator<<(const List& other);
+            List operator>>(const List& other);
+            List operator+=(const List& other);
+            List operator-=(const List& other);
+            List operator*=(const List& other);
+            List operator/=(const List& other);
+            void operator<<=(const List& other);
+            void operator>>=(const List& other);
+            Bitset operator[](const int& index);
+            Bitset operator[](const Generator& range);
+            void operator~();
+
+            unsigned int size() const;
+            void append(const Bitset& value);
+            void clear();
+            void copy();
+            void count(const Bitset& value);
+            void extend(const Bitset& iterable);
+            void index(const Bitset& value, const int start, const int end);
+            void insert(const int index, const Bitset& value);
+            void pop(const int index);
+            void remove(const Bitset& value);
+            void reverse();
+            void sort();
+    };
+
+    /// @brief Represents a single Pythonic variable 
+    /// that can be dynamically typed and garbage collected.
+    class PyObject {};
 };
