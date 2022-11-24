@@ -9,7 +9,7 @@
 #include "Interpreter/Interpreter.hh"
 #include "Standard/Standard.hh"
 namespace mamba {
-    /* The heart of the interpreter. It is built as
+    /* The heart of the compiler. It is built as
      * a command line interface tool and unites all 
      * components into read-execute-repeat loop.*/
     
@@ -18,12 +18,12 @@ namespace mamba {
     };
     /// @brief Interprets the input line into machine-readable IR. 
     /// @return The array of integers to pass to the execute function.
-    std::vector<int> interpret(std::string line){
+    std::vector<int> interpret(std::string line) {
 
     }
     /// @brief Executes a single line of code in REP loop.
     /// @param query The pointer to the array of integers to be matched.
-    void execute(std::vector<int> query){
+    void execute(std::vector<int> query) {
         for (int command : query){
             switch (command){}
         }
@@ -58,12 +58,12 @@ namespace mamba {
     }
     void build();
 
-    void version(){
+    void version() {
         std::cout << "Mamba Python 1.0.0\n";
         //To add version details and contributors.
     }
 
-    void license(){
+    void license() {
         std::ifstream license("LICENSE");
         if (license.is_open()) std::cout << license.rdbuf();
         else std::cout << "Apache License v. 2.\n";
@@ -85,12 +85,12 @@ namespace mamba {
     }
 };
 
-int main(int argc, char** argv){
-    if (argc == 1){
+int main(int argc, char** argv) {
+    if (argc == 1)
         std::cout << "Welcome to Mamba Python v1.0.0.\n" <<
             "Type mamba [PATH] to build a Python app.\n" <<
             "Type mamba -h to get help." << std::endl;
-    } else if (argv[1] == "run") mamba::run(argv[2]);
+    else if (argv[1] == "run") mamba::run(argv[2]);
     else if (argv[1] == "inspect") mamba::inspect(argv[2]);
     else if (argv[1] == "set") mamba::set(argv[2]);
     else if (argv[1] == "unset") mamba::unset(argv[2]);

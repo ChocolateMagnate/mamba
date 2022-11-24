@@ -1,17 +1,10 @@
-/* Mozilla Public License v2 | Vladyslav Korol
+/* Mamba Python by Vladyslav Korol | Apache License 2.0
  * This file deals with implementing the built-in functions
  * imbued into the interpreter itself, such as print(), dir(), etc.*/
 #include <iostream>
-#include "Dynamism.cc"
+
 #include "Types.cc"
-namespace Interpreter {
-
-            //###########################
-
-            //    STANDARD FUNCTIONS    
-
-            //###########################
-
+namespace mamba {
 /// @brief Verifies if the boolean collection only contains true values.
 /// @return True if all items are true, false otherwise.
 bool all(std::vector<bool> sequence){
