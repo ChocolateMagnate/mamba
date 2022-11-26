@@ -225,6 +225,8 @@ namespace mamba {
             void sort();
     };
 
+    class Tuple : public Bitset {};
+
     /// @brief Represents a single Pythonic variable 
     /// that can be dynamically typed and garbage collected.
     class PyObject {};
