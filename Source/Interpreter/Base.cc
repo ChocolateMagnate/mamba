@@ -14,14 +14,14 @@ namespace mamba {
         unsigned long long int main[32]; // 32 * 32 * 2 = 2048 bits
         unsigned long long int* secondary = nullptr; // Is used for dynamic memory allocation
         public:
-            Bitset(){
+            Bitset() {
                 for (int index = 0; index < 32; ++index) {
                     main[index] = 0;
                     if (index < 5) dimensions[index] = 0;
                 }
             }
             template<int size> Bitset() {
-                secondary = new unsigned long long int[size];
+                if (size > 2048) secondary = new unsigned long long int[size];
             }
     };
 
@@ -71,6 +71,37 @@ namespace mamba {
             void operator~();
 
             unsigned int size() const;
+            const char* toConstChar() const;
+            Bitset split(const String* delimiters);
+            Bitset split(const char** delimiters);
+            void capitalize();
+            void casefold();
+            bool endswith(const String& suffix);
+            bool endswith(const char* suffix);
+            unsigned int find(const String& sub, const unsigned int start, const unsigned int end);
+            unsigned int find(const char* sub, const unsigned int start, const unsigned int end);
+            bool isalpha();
+            bool isalnum();
+            bool isascii();
+            bool isnumeric();
+            bool isdecimal();
+            bool isdigit();
+            bool isidentifier();
+            bool islower();
+            bool isprintable();
+            bool isspace();
+            bool istitle();
+            bool isupper();
+            void join(const String& iterable);
+            void join(const char** iterable);
+            unsigned int len();
+            String ljust(const unsigned int width, const char fillchar);
+            String ljust(const unsigned int width, const String& fillchar);
+            void lower();
+            String lstrip(const String& chars);
+            String lstrip(const char* chars);
+            String maketrans(const String& base, const String& makechars, const String& deletechars = "");
+            String maketrans(const char* base, const char* makechars, const char* deletechars = "");
     };
 
 };

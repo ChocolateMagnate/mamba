@@ -2,7 +2,7 @@
  * This file deals with implementing the built-in functions
  * imbued into the interpreter itself, such as print(), dir(), etc.*/
 #include <iostream>
-
+#include "./Interpreter/Base.hh"
 #include "Types.cc"
 namespace mamba {
 /// @brief Verifies if the boolean collection only contains true values.
@@ -20,7 +20,7 @@ bool any(std::vector<bool> sequence){
 /// @brief Lists all properties and methods of the given object.
 /// @param object The Pythonic object whose public members to list.
 /// @return The list of public properties and methods.
-auto dir(PyGenericObject object){
+auto dir(mamba::PyObject object){
     auto list = object.properties;
     list.insert(list.end(), object.methods.begin(), object.methods.end());
     return list;

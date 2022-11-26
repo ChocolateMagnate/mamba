@@ -175,10 +175,10 @@ namespace mamba {
             void clear();
             void copy();
             void fromkeys(const Bitset& keys, const Bitset& value);
-            void get(const Bitset& key, const Bitset& default);
+            void get(const Bitset& key);
             void pop(const Bitset& key);
             void popitem();
-            void setdefault(const Bitset& key, const Bitset& default);
+            void setdefault(const Bitset& key);
             void update(const Bitset& other);
             void update(const Bitset& other, const Bitset& other2);
     };

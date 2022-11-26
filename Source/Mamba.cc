@@ -4,10 +4,12 @@
  * namespace to execute the code. The app works in CLI. */
 #include <iostream>
 #include <fstream>
+
 #include "CLI.cc"
 #include "Compiler/Compiler.hh"
 #include "Interpreter/Interpreter.hh"
 #include "Standard/Standard.hh"
+
 namespace mamba {
     /* The heart of the compiler. It is built as
      * a command line interface tool and unites all 

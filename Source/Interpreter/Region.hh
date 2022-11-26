@@ -1,7 +1,9 @@
 #pragma once
+#include "Base.hh"
 namespace mamba {
     /// @brief The implementation of the Mamba memory pool
     /// used to store all varying-sized data.
+    template<unsigned int size>
     class Region {
         public:
             //Resource Acquisition Is Initialisation
@@ -13,10 +15,9 @@ namespace mamba {
             ~Region(); //Releases all resources.
 
             //Resource operator managament
-            template<typename T> unsigned int operator+(const T& other);
-            template<typename T> unsigned int operator-(const T& other);
+            template<typename T> void operator<<(const T& other);
             template<typename T> T* operator[](unsigned int index);
-            void* operator[](unsigned int index);
+            mamba::Bitset& operator[](unsigned int index);
             
 
     };

@@ -4,12 +4,13 @@
    gammavariate(), gauss(), longnormvariate(), normalvariate(), 
    vonmisesvariate(), paretovariate(), weibullvariate(), Random, SystemRandom */
 #include <iostream>
-  
+#include "./Interpreter/Base.hh"
+
 namespace mamba::random {
   //Bookkeeping functions:  
   /// @brief Initialises a random number generator.
   /// @param a The seed value to hook on.
-  void seed(unsinged int a, int version = 2);
+  void seed(const unsigned int a, const int version = 2);
   
   //Random generators:
   
@@ -20,18 +21,18 @@ namespace mamba::random {
   int randrange(int stop);
   
   /// @brief Generates a random integer from start exclusively to stop inclusively with step.
-  int randrange(inst start, inst stop, int step = 1);
+  int randrange(const int start, const int stop, const int step = 1);
   
   /// @brief Generates a random integer more than a but smaller than b.
   int randint(int a, int b);
   
-  unsinged int getrandbits(unsigned int k);
+  unsigned int getrandbits(unsigned int k);
   
   /// @brief Selects and returns a random item from the sequence.
   mamba::Bitset choice(mamba::Bitset sequence);
   
   /// @brief Returns k amount of random values from the population.
-  mamba::Bitset choices(mamba::Bitset population, unsinged int k = 1);
+  mamba::Bitset choices(mamba::Bitset population, unsigned int k = 1);
   
   /// @brief Puts the elements of Python sequence in random order.
   void shuffle(mamba::Bitset x);
