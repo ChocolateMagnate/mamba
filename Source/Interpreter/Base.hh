@@ -9,12 +9,15 @@ namespace mamba {
             /// @return The result of the function.
             virtual void operator()(const char** args);
     };
+
+
     /// @brief Describes Pythonic lazy generators and iterators.
     class Generator {
         public:
             Generator(Function& function);
             Bitset generate(); //Yields the next value.
     };
+
     /// @brief The basic bitset used to represent fluid data.
     class Bitset {
         public:
