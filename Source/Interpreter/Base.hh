@@ -1,3 +1,10 @@
+/* Mamba Python by Vladyslav Korol | Apache License 2
+ * This file describes the core components of the 
+ * runtime enviornment that enable dynamic typing and
+ * the foundational datatypes with bitsets. 
+ * Thanks goes to @Paige Ruten (https://stackoverflow.com/users/813/paige-ruten) for the help:
+   https://stackoverflow.com/questions/47981/how-do-i-set-clear-and-toggle-a-single-bit*/
+
 #pragma once
 #include <string>
 namespace mamba {
@@ -61,6 +68,19 @@ namespace mamba {
             void operator~();
 
             unsigned int size() const; //Returns the size of the bitset.
+            /// @brief Toggles the bit at the given index with bit operators.
+            /// @param index The index of the bit to toggle.
+            /// @author Paige Ruten at StackOverflow
+            /// @return The state of the toggled bit.
+            bool toggle(unsigned int index);
+            /// @brief Sets the bit at the given index to 1.
+            /// @param index The index of the bit to set.
+            /// @author Paige Ruten at StackOverflow 
+            void set(unsigned int index);
+            /// @brief Sets the bit at the given index to 0.
+            /// @param index The index of the bit to clear.
+            /// @author Paige Ruten at StackOverflow 
+            void clear(unsigned int index);
             //To be continued...
 
     };

@@ -8,15 +8,16 @@
 
 namespace mamba {
 
-
-    void warn(mamba::Warnings warning) {}
+    /// @brief Issues a warning message and continues the execution.
+    /// @param warning 
+    void warn(unsigned int warning) {}
 
     /// @brief Raises an exception specified by the argument.
     /// @param exception Enum class member denoting the exception to raise.
     /// @param line The line that caused the exception.
     /// @param offset The column in the line that caused the exception.
     /// @param length The length of the token that caused the exception.
-    void raise(mamba::Exceptions exception, int line, int offset, int length) {
+    void raise(unsigned int exception, int line, int offset, int length) {
         //To do: implement the elegant call stack printing.
         std::cout << "-------------------------------------" << 
             "Traceback (most recent call last):\n" <<

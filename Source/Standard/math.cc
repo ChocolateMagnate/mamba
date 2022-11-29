@@ -102,8 +102,7 @@ namespace mamba::math {
         if (integers[1] == 0) return integers[0];
         if (integers[0] == 1 || integers[1] == 1) return 1;
         // gcd(2a, 2b) = 2 * gcd(a, b):
-        if (integers[0] / 2 == 0 && integers[1] / 2 == 0)
-            return 2 * gcd(integers[0] / 2, integers[1] / 2);
+        if (integers[0] / 2 == 0 && integers[1] / 2 == 0) {}
         
 
     }

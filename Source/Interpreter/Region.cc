@@ -7,7 +7,7 @@ namespace mamba {
     /// @brief Implementation of the Mamba memory pool.
     template<unsigned int size>
     class Region {
-        void* bytes;
+        byte* bytes;
         unsigned int count, current;
         mamba::Bitset* items[size]; //Pointer storage.
         public:
@@ -50,5 +50,9 @@ namespace mamba {
                 count += sizeof(T);
                 current++;
             }
+
+            /// @brief The exposition getter for the allocated block.
+            /// @return The pointer to the bytes residing in the region.
+            byte* data() : return bytes;
     };
 };
