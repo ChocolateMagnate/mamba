@@ -46,7 +46,7 @@ namespace mamba {
         /// @author Paige Ruten at StackOverflow 
         /// @return True if the bit is set, false otherwise.
         bool peek(unsigned int bit) {
-            return (*source >> bit) & 1;
+            return (*source >> bit) & 1U;
         }
     public:
         /// @brief Constructs a new fresh bitset.
@@ -98,9 +98,6 @@ namespace mamba {
 
     class String : public Bitset {
     public:
-        String() {
-
-        }
         String(const char* value);
         String(const std::string& value);
         String(const String& other);
@@ -109,70 +106,6 @@ namespace mamba {
         String& operator=(String&& other);
         ~String();
 
-        String operator+(const String& other) {
-            return String();
-        }
-        String operator-(const String& other);
-        String operator*(const String& other);
-        String operator/(const String& other);
-        String operator%(const String& other);
-        String operator^(const String& other);
-        void operator&(const String& other);
-        bool operator|(const String& other);
-        String operator<<(const String& other);
-        String operator>>(const String& other);
-        String operator+=(const String& other);
-        String operator-=(const String& other);
-        String operator*=(const String& other);
-        String operator/=(const String& other);
-        String operator%=(const String& other);
-        String operator^=(const String& other);
-        void operator&=(const String& other);
-        void operator|=(const String& other);
-        void operator<<=(const String& other);
-        void operator>>=(const String& other);
-        bool operator==(const String& other);
-        bool operator!=(const String& other);
-        bool operator<(const String& other);
-        bool operator>(const String& other);
-        void operator<=(const String& other);
-        void operator>=(const String& other);
-        int operator[](const String& other);
-        int operator[](const int& other);
-        void operator~();
-
-        unsigned int size() const;
-        const char* toConstChar() const;
-        Bitset split(const String* delimiters);
-        Bitset split(const char** delimiters);
-        void capitalize();
-        void casefold();
-        bool endswith(const String& suffix);
-        bool endswith(const char* suffix);
-        unsigned int find(const String& sub, const unsigned int start, const unsigned int end);
-        unsigned int find(const char* sub, const unsigned int start, const unsigned int end);
-        bool isalpha();
-        bool isalnum();
-        bool isascii();
-        bool isnumeric();
-        bool isdecimal();
-        bool isdigit();
-        bool isidentifier();
-        bool islower();
-        bool isprintable();
-        bool isspace();
-        bool istitle();
-        bool isupper();
-        void join(const String& iterable);
-        void join(const char** iterable);
-        unsigned int len();
-        String ljust(const unsigned int width, const char fillchar);
-        String ljust(const unsigned int width, const String& fillchar);
-        void lower();
-        String lstrip(const String& chars);
-        String lstrip(const char* chars);
-        String maketrans(const String& base, const String& makechars, const String& deletechars = "");
-        String maketrans(const char* base, const char* makechars, const char* deletechars = "");
     };
 
 };

@@ -54,61 +54,138 @@ namespace mamba {
             String& operator=(String&& other);
             ~String();
 
-            String operator+(const String& other);
-            String operator-(const String& other);
-            String operator*(const String& other);
-            String operator/(const String& other);
-            bool operator|(const String& other);
-            String operator<<(const String& other);
-            String operator>>(const String& other);
-            String operator+=(const String& other);
-            String operator-=(const String& other);
-            String operator*=(const String& other);
-            String operator/=(const String& other);
-            void operator<<=(const String& other);
-            void operator>>=(const String& other);
-            bool operator==(const String& other);
-            bool operator!=(const String& other);
-            bool operator<(const String& other);
-            bool operator>(const String& other);
-            void operator<=(const String& other);
-            void operator>=(const String& other);
-            char operator[](const int& other);
-            char operator[](const Generator& range);
-            void operator~();
+        /// @brief Concatenates the string with another string.
+        /// @param other The other string to concatenate with.
+        /// @return The concatenated string.
+        String operator+(const String& other) { }
+        /// @brief Extracts all external characters from the string.
+        /// @param other The string containing the characters to be removed.
+        /// @return The serialised string.
+        String operator-(const String& other);
+        /// @brief Extracts all external characters from the string.
+        /// @param other Constant array of characters to be removed.
+        /// @return The serialised string.
+        String operator-(const char* other);
+        /// @brief Repeats the string a given number of times.
+        /// @param count The number of times to repeat.
+        /// @return The looped string.
+        String operator*(const unsigned int count);
+        /// @brief Extends the string with another string.
+        /// @param other The string to concatenate with the original.
+        void operator+=(const String& other);
+        /// @brief Extends the string with another string.
+        /// @param other The constant array of characters to concatenate with the original.
+        void operator+(const char* other);
+        /// @brief Removes characters from the original string.
+        /// @param other The string containing the characters to be removed.
+        void operator-=(const String& other);
+        /// @brief Removes characters from the original string.
+        /// @param other The constant array of characters to be removed.
+        void operator-=(const char* other);
+        /// @brief Loops the string a given number of times.
+        /// @param count The number of times to repeat.
+        void operator*=(const unsigned int count);
+        /// @brief Evaluates two Mamba strings for equality.
+        /// @param other The constant array of characters to compare with.
+        /// @return True if the strings are equal, false otherwise.
+        bool operator==(const String& other);
+        /// @brief Evaluates two Mamba strings for equality.
+        /// @param other The constant array of characters to compare with.
+        /// @return True if the strings are equal, false otherwise.
+        bool operator==(const char* other);
+        /// @brief Evaluates two Mamba strings for inequality.
+        /// @param other The other string to compare with.
+        /// @return False if the strings are equal, true otherwise.
+        bool operator!=(const String& other);
+        /// @brief Evaluates two Mamba strings for inequality.
+        /// @param other The constant array of characters to compare with.
+        /// @return False if the strings are equal, true otherwise.
+        bool operator!=(const char* other);
+        /// @brief Evaluates if the string is less than another string.
+        /// @param other The string to compare with.
+        /// @return True if the original is less than the other, false otherwise.
+        bool operator<(const String& other);
+        /// @brief Evaluates if the string is less than another string.
+        /// @param other The constant array of characters to compare with.
+        /// @return True if the original is less than the other, false otherwise.
+        bool operator<(const char* other);
+        /// @brief Evaluates if the string is greater than another string.
+        /// @param other The string to compare with.
+        /// @return True if the original is greater than the other, false otherwise.
+        bool operator>(const String& other);
+        /// @brief Evaluates if the string is greater than another string.
+        /// @param other The constant array of characters to compare with.
+        /// @return True if the original is greater than the other, false otherwise.
+        bool operator>(const char* other);
+        /// @brief Evaluates if the string is less than or equal to another string.
+        /// @param other The string to compare with.
+        /// @return True if the original is less than or equal to the other, false otherwise.
+        bool operator<=(const String& other);
+        /// @brief Evaluates if the string is less than or equal to another string.
+        /// @param other The constant array of characters to compare with.
+        /// @return True if the original is less than or equal to the other, false otherwise.
+        bool operator<=(const char* other);
+        /// @brief Evaluates if the string is greater than or equal to another string.
+        /// @param other The string to compare with.
+        /// @return True if the original is greater than or equal to the other, false otherwise.
+        bool operator>=(const String& other);
+        /// @brief Evaluates if the string is greater than or equal to another string.
+        /// @param other The constant array of characters to compare with.
+        /// @return True if the original is greater than or equal to the other, false otherwise.
+        bool operator>=(const char* other);
+        /// @brief Accesses a character in the string.
+        /// @param count The index of the character to access.
+        /// @return The reference to the character that can be read or written.
+        char& operator[](const int count);
+        /// @brief Slices the string with range-based indexing.
+        /// @param range The range of characters to slice.
+        /// @return The reference to the sliced string that can be read or written.
+        String& operator[](const Generator& range); //String slicing
 
-            const char* toConstChar() const;
-            unsigned int size() const;
-            Bitset split(const String* delimiters);
-            Bitset split(const char** delimiters);
-            void capitalize();
-            void casefold();
-            bool endswith(const String& suffix);
-            bool endswith(const char* suffix);
-            unsigned int find(const String& sub, const unsigned int start, const unsigned int end);
-            unsigned int find(const char* sub, const unsigned int start, const unsigned int end);
-            bool isalpha();
-            bool isalnum();
-            bool isascii();
-            bool isnumeric();
-            bool isdecimal();
-            bool isdigit();
-            bool isidentifier();
-            bool islower();
-            bool isprintable();
-            bool isspace();
-            bool istitle();
-            bool isupper();
-            void join(const String& iterable);
-            void join(const char** iterable);
-            unsigned int len();
-            String ljust(const unsigned int width, const char fillchar);
-            String ljust(const unsigned int width, const String& fillchar);
-            void lower();
-            String lstrip(const String& chars);
-            String lstrip(const char* chars);
-            String maketrans(const String& base, const String& makechars, const String& deletechars = "");
-            String maketrans(const char* base, const char* makechars, const char* deletechars = "");
+        /// @brief Returns the length of the string in characters.
+        unsigned int size() const;
+        /// @brief Returns the constant array of characters equivalent to the string.
+        const char* toConstChar() const;
+        /// @brief Divides the string into a list of substrings.
+        /// @param delimiters The Mamba String separators to use for the division.
+        /// @return A list of strings divided by the delimiters.
+        Bitset split(const String& delimiters);
+        /// @brief Divides the string into a list of substrings.
+        /// @param delimiters The constant two-dimensional array
+        /// of characters to use for the division.
+        /// @return A list of strings divided by the delimiters.
+        Bitset split(const char** delimiters);
+        /// @brief Turns all characters in the string to uppercase.
+        void capitalize();
+        /// @brief 
+        void casefold();
+        /// @brief Identifies if the string ends with an instance of the suffix.
+        bool endswith(const String& suffix);
+        bool endswith(const char* suffix);
+        unsigned int find(const String& sub, const unsigned int start, const unsigned int end);
+        unsigned int find(const char* sub, const unsigned int start, const unsigned int end);
+        bool isalpha();
+        bool isalnum();
+        bool isascii();
+        bool isnumeric();
+        bool isdecimal();
+        bool isdigit();
+        bool isidentifier();
+        bool islower();
+        bool isprintable();
+        bool isspace();
+        bool istitle();
+        bool isupper();
+        void join(const String& iterable);
+        void join(const char** iterable);
+        unsigned int len();
+        String ljust(const unsigned int width, const char fillchar);
+        String ljust(const unsigned int width, const String& fillchar);
+        void lower();
+        String lstrip(const String& chars);
+        String lstrip(const char* chars);
+        String maketrans(const String& base, const String& makechars, const String& deletechars = "");
+        String maketrans(const char* base, const char* makechars, const char* deletechars = "");
             //To add the dictionary maketrans overload.
     };
 
