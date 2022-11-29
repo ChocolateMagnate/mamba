@@ -1,9 +1,7 @@
 /* Mamba Python by Vladyslav Korol | Apache License 2
  * This file describes the core components of the 
  * runtime enviornment that enable dynamic typing and
- * the foundational datatypes with bitsets. 
- * Thanks goes to @Paige Ruten (https://stackoverflow.com/users/813/paige-ruten) for the help:
-   https://stackoverflow.com/questions/47981/how-do-i-set-clear-and-toggle-a-single-bit*/
+ * the foundational datatypes with bitsets. */
 
 #pragma once
 #include <string>
@@ -30,57 +28,13 @@ namespace mamba {
         public:
             Bitset(); //Default constructor.
             template<int size> Bitset(); //Constructor for a bitset of a given size.
-            template<int size> Bitset(int* state); //Constructor for a bitset of a given size and initial value.
             Bitset(const Bitset& other); //Copy constructor.
             Bitset(Bitset&& other); //Move constructor.
             Bitset& operator=(const Bitset& other); //Copy assignment operator.
             Bitset& operator=(Bitset&& other); //Move assignment operator.
             ~Bitset(); //Destructor.
 
-            Bitset operator+(const Bitset& other);
-            Bitset operator-(const Bitset& other);
-            Bitset operator*(const Bitset& other);
-            Bitset operator/(const Bitset& other);
-            Bitset operator%(const Bitset& other);
-            Bitset operator^(const Bitset& other);
-            void operator&(const Bitset& other);
-            bool operator|(const Bitset& other);
-            Bitset operator<<(const Bitset& other);
-            Bitset operator>>(const Bitset& other);
-            Bitset operator+=(const Bitset& other);
-            Bitset operator-=(const Bitset& other);
-            Bitset operator*=(const Bitset& other);
-            Bitset operator/=(const Bitset& other);
-            Bitset operator%=(const Bitset& other);
-            Bitset operator^=(const Bitset& other);
-            void operator&=(const Bitset& other);
-            void operator|=(const Bitset& other);
-            void operator<<=(const Bitset& other);
-            void operator>>=(const Bitset& other);
-            bool operator==(const Bitset& other);
-            bool operator!=(const Bitset& other);
-            bool operator<(const Bitset& other);
-            bool operator>(const Bitset& other);
-            void operator<=(const Bitset& other);
-            void operator>=(const Bitset& other);
-            int operator[](const Bitset& other);
-            int operator[](const int& other);
-            void operator~();
-
             unsigned int size() const; //Returns the size of the bitset.
-            /// @brief Toggles the bit at the given index with bit operators.
-            /// @param index The index of the bit to toggle.
-            /// @author Paige Ruten at StackOverflow
-            /// @return The state of the toggled bit.
-            bool toggle(unsigned int index);
-            /// @brief Sets the bit at the given index to 1.
-            /// @param index The index of the bit to set.
-            /// @author Paige Ruten at StackOverflow 
-            void set(unsigned int index);
-            /// @brief Sets the bit at the given index to 0.
-            /// @param index The index of the bit to clear.
-            /// @author Paige Ruten at StackOverflow 
-            void clear(unsigned int index);
             //To be continued...
 
     };
