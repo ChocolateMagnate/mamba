@@ -15,22 +15,23 @@ namespace mamba {
     /// the continuous storage where all the data lives, meanwhile the head
     /// is the array of byte* that point to each individual value.  
     class Region {
-        byte *bytes, *items; //The pointer to the beginning and segmented values in the memory pool.
+        byte *bytes, *items; //The pointers to the beginning and segmented values in the memory pool.
         unsigned int capacity, count, index, neck; 
     public:
         /// @brief Generates a new region of the given size.
         /// @tparam size The maximum count of items the memory pool can hold.
         /// @param size The number of bytes to allocate on the heap.
-        template<unsigned int size> Region(unsigned int size = 1024) {
-            this->capacity = size;
-            this->neck = sizeof(byte*) * size; //The separation point between the head and the body.
-            this->capacity = this->neck + 1;
+        template<unsigned int capacity> Region(unsigned int size = 1024) {
+            this->capacity = capacity;
+            //The separation point between the head and the body.
+            this->neck = sizeof(byte*) * capacity; 
+            this->count = this->neck + 1;
             bytes = new byte[size + neck];
         }
         //Produces a new region with the other one appended.
         Region(const Region& other) {
             byte* extension = new byte[this->capacity + this->neck + other.capacity + other.neck];
-            memcpy(extension, bytes, capacity);
+            memcpy(extension, this->bytes, this->capacity);
             delete[] bytes;
             bytes = extension;
         }
@@ -56,14 +57,13 @@ namespace mamba {
         /// @param other The value to be stored.
         /// @return The integer of the available space.
         template<typename T> void operator<<(const T& other) {
-            const int size = sizeof(T);
-            if (size > this->size) {
-                throw std::out_of_range("The region {}-byte-wide is too small to store the value.", this->size);
-            }
-            memccpy(bytes + count, &other, size);
+            const int sizeT = sizeof(T);
+            if (sizeT > this->capacity) throw std::out_of_range
+                ("The region {}-byte-wide is too small to store the value.", capacity);
+            memccpy(bytes + count, other, sizeT);
             body[current] = (mamba::Bitset*)(bytes + count);
             count += sizeof(T);
-            current++;
+            index++;
         }
         /// @brief Releases the memory from the region.
         /// @param position The item position in the region.
@@ -73,9 +73,9 @@ namespace mamba {
         /// memory is required, it is going to be overwritten.
         void operator>>(const unsigned int position) {
             if (position >= capacity) throw std::out_of_range
-                ("The position is out of the bounds in block of {}.", this->capacity);
+                ("The position is out of the bounds in block of {}.", capacity);
             count -= sizeof(items[position]);
-            this->index--;
+            index--;
         }
 
         /// @brief The exposition getter for the allocated block.
