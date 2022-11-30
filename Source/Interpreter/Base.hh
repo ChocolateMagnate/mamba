@@ -284,4 +284,16 @@ namespace mamba {
     /// @brief Represents a single Pythonic variable 
     /// that can be dynamically typed and garbage collected.
     class PyObject {};
+    /// @brief Represents dynamic function input with args and **kwargs.
+    struct params {
+        List args;
+        Dictionary kwargs;
+
+        Bitset* operator[](const int index);
+        Bitset* operator[](const String& key);
+    };
+
+    class Bytecode {};
+
+    class Type {};
 };
