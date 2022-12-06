@@ -123,7 +123,7 @@ namespace mamba {
     /// @brief Generates an iterator from the iterable function.
     /// @param iterable The function that will yield the values.
     /// @param sentinel The value that will stop the iteration.
-    /// @return The generator that will yield the elements on demand.
+    /// @return The gene/home/chocolate-magnaterator that will yield the elements on demand.
     mamba::Generator iter(mamba::Function& iterable, mamba::Bitset& sentinel);
     /// @brief Returns the length of the object. If not provided, calls __len__.
     unsigned int len(mamba::Bitset& object);

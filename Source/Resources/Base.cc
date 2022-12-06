@@ -11,12 +11,47 @@
 #include "Base.hh"
 
 namespace mamba {
+    /// @brief The helper function to convert any input data into a sequence of bytes.
+    /// @tparam T The type of the input.
+    /// @param value The value to cast.
+    /// @return The reinterpreted byte.
+    template<typename T>
+    byte cast(T value) {
+        return reinterpret_cast<byte>(value);
+    }
+
+    /// @brief Mamboic iterator type used to enumerate through collections. 
+    /// @tparam T The type of data to be iterated through: fluid (Bitset),
+    /// list (List), dictionary (Dictionary), etc.
+    template<typename T> class Iterator {
+        T* data;
+    public:
+        Iterator(T* data) {
+            this->data = data;
+        }
+        T& operator*() {
+            return *data; //Dereferenced pointer
+        }
+        T* operator->() {
+            return data; //Pointer to the object
+        }
+        Iterator& operator++() {
+
+        }
+        bool operator==(const Iterator& other) {
+            return data == other.data;
+        }
+        bool operator!=(const Iterator& other) {
+            return data != other.data;
+        }
+    };
+
     /// @brief The implementation of the bitset data structure.
     /// It is used to represent dynamically typed data as a single object.
     class Bitset {
         byte* source; //The pointer to the byte source of the bitset.
         int dimensions[5]; 
-        byte main[32]; // 32 * 32 * 2 = 2048 bits
+        byte cache[32]; // 32 * 32 * 2 = 2048 bits
         unsigned int secondary{}; // Is used for dynamic memory allocation
         mamba::Region* storage; // The storage for the dynamic memory allocation
 
@@ -50,11 +85,11 @@ namespace mamba {
         }
     public:
         /// @brief Constructs a new fresh bitset.
-        /// @param pool The reference to the memory pool 
+        /// @param pool The pointer to the memory pool 
         /// to use if the bitset size exceeds stack.
-        Bitset(mamba::Region& pool) {
-            storage = &pool;
-            source = static_cast<byte*>(&main);
+        Bitset(mamba::Region* pool) {
+            storage = pool;
+            source = cache;
         }
         /// @brief Constructs a new bitset with the requirements.
         /// @tparam size The minimal required size of the bitset in bytes.
@@ -66,11 +101,19 @@ namespace mamba {
                 source = pool[secondary];
             } else {
                 storage = nullptr;
-                source = static_cast<byte*>(&main);
+                source = static_cast<byte*>(&cache);
             }
         }
         ~Bitset() {
             if (storage != nullptr) *storage >> secondary;
+        }
+
+        Iterator<Bitset> begin() {
+            return Iterator<Bitset>(this);
+        }
+
+        Iterator<Bitset> end() {
+            return Iterator<Bitset>(this + sizeof(Bitset));
         }
 
         /// @brief Returns the signed int equivalent of the bitset.

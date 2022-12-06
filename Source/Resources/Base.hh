@@ -5,6 +5,7 @@
 
 #pragma once
 #include <string>
+
 namespace mamba {
     /// @brief Basic representation of Python function as a functor object.
     class Function {
@@ -23,6 +24,32 @@ namespace mamba {
             Bitset generate(); //Yields the next value.
     };
 
+    /// @brief The primary class used to represent the range generator.
+    /// Not only it is used in range() but list slicing are represented as
+    /// a lazy sequence of numbers within a certain bond and acceleration.
+    /// @tparam TIntegral The type of the counters. In most occassions it 
+    /// will be int, but sometimes could also be float.
+    template<typename TIntegral>
+    class Range : public Generator {
+        TIntegral start, stop, step;
+        public:
+            Range(TIntegral stop);
+            Range(TIntegral start, TIntegral stop, TIntegral step = 1);
+    };
+    /// @brief Mamboic iterator type used to enumerate through collections. 
+    /// @tparam T The type of data to be iterated through: fluid (Bitset),
+    /// list (List), dictionary (Dictionary), etc.
+    template<typename T> class Iterator {
+        public:
+            Iterator(T* data);
+            T& operator*();
+            T* operator->();
+            Iterator& operator++();
+            Iterator operator++(int);
+            bool operator==(const Iterator& other);
+            bool operator!=(const Iterator& other);
+    };
+
     /// @brief The basic bitset used to represent fluid data.
     class Bitset {
         public:
@@ -34,8 +61,13 @@ namespace mamba {
             Bitset& operator=(Bitset&& other); //Move assignment operator.
             ~Bitset(); //Destructor.
 
+            mamba::Iterator<Bitset> start();
+            mamba::Iterator<Bitset> end();
+
             unsigned int size() const; //Returns the size of the bitset.
-            //To be continued...
+            bool toBool();
+            int toInt();
+            float toFloat();
 
     };
 
@@ -164,6 +196,8 @@ namespace mamba {
         bool endswith(const char* suffix);
         unsigned int find(const String& sub, const unsigned int start, const unsigned int end);
         unsigned int find(const char* sub, const unsigned int start, const unsigned int end);
+        int find(const String& sub, const unsigned int start = 0);
+        int find(const char* sub, const unsigned int start = 0);
         bool isalpha();
         bool isalnum();
         bool isascii();
@@ -187,6 +221,7 @@ namespace mamba {
         String maketrans(const String& base, const String& makechars, const String& deletechars = "");
         String maketrans(const char* base, const char* makechars, const char* deletechars = "");
             //To add the dictionary maketrans overload.
+        String substring(const unsigned int start, const unsigned int end = 1000000000);
     };
 
     class Dictionary : public Bitset {

@@ -3,7 +3,7 @@
  * imbued into the interpreter itself, such as print(), dir(), etc.*/
 #include <iostream>
 #include "./Interpreter/Base.hh"
-#include "Types.cc"
+#include "Standard/Types.cc"
 namespace mamba {
 /// @brief Verifies if the boolean collection only contains true values.
 /// @return True if all items are true, false otherwise.

@@ -18,21 +18,21 @@ namespace mamba::string {
 
     class Formatter {
         public:
-            void format(mamba::String& formatString);
-            void vformat(mamba::String& formatString);
-            std::vector<std::tuple<const char*>> parse(mamba::String& formatString);
-            std::pair<mamba::Bitset, mamba::String> getField(mamba::String& formatString);
-            const char* getValue(int key);
-            const char* getValue(mamba::String& key);
+            void format(const mamba::String& formatString);
+            void vformat(const mamba::String& formatString);
+            std::vector<std::tuple<const char*>> parse(const mamba::String& formatString);
+            std::pair<mamba::Bitset, mamba::String> getField(const mamba::String& formatString);
+            const char* getValue(const int key);
+            const char* getValue(const mamba::String& key);
             //To add: convertField, formatField
     };
 
     class Template {
         public:
             mamba::String templateString;
-            Template(mamba::String& templateString);
-            void substitute(mamba::Dictionary& mapping);
-            void safeSubstitute(mamba::Dictionary& mapping);
+            Template(const mamba::String& templateString);
+            void substitute(const mamba::Dictionary& mapping);
+            void safeSubstitute(const mamba::Dictionary& mapping);
             bool isValid();
             mamba::Bitset getIdentifiers();
     };
@@ -41,6 +41,15 @@ namespace mamba::string {
     /// @param string The input string to process.
     /// @param sep The seperator to divide by.
     /// @return The amalgamation of all cap words.
-    mamba::String capwords(mamba::String& string, mamba::String& sep = " ");
+    mamba::String capwords(const mamba::String& string, const mamba::String& sep = " ");
+
+    /// @brief Verifies if the input string properly closes braces. It 
+    /// supposes the string only contains braces ()[]{} and checks if they
+    /// do not interrupt the closing order.
+    /// @param braces The input string to process.
+    /// @note This function was originally a failed internship admission task.
+    /// It made it to Mamba in order to seal the deal and implement it.
+    /// @return True if the braces are properly closed, false otherwise.
+    bool bracesProperlyClosed(const mamba::String& braces);
 
 };

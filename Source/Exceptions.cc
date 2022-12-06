@@ -1,5 +1,5 @@
 /* Mamba Python by Vladyslav Korol | Apache License 2
- * THis file implements error handling in the runtime with exceptions.*/
+ * This file implements error handling in the runtime with exceptions.*/
 #include <iostream>
 #include <vector>
 

@@ -24,7 +24,6 @@ namespace mamba::re {
         public:
             mamba::String string; //The string to match.
 
-
             mamba::String expand(mamba::String& templateString);
             mamba::String group(int index);
             std::tuple<mamba::String> group(unsigned int* groups, int groupCount);
@@ -37,7 +36,6 @@ namespace mamba::re {
             unsigned int pos();
             unsigned int endpos();
             mamba::Bitset lastindex();
-
     };
 
     /// @brief The pattern class used to represent a single regex pattern.
