@@ -1,0 +1,7 @@
+[requires]
+pybind11/2.7.1
+benchmark/1.8.3
+gtest/1.14.0
+
+[generators]
+MakeDeps

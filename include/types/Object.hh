@@ -1,0 +1,4 @@
+namespace mamba {
+
+    class Object;
+}
